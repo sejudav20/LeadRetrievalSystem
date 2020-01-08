@@ -12,6 +12,15 @@
     tools:context=".LoginActivity">
 
     <!-- Login progress -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/design_default_color_primary"
+        android:text="Welcome to Conference Pro \n Please Sign In or Sign Up"
+        android:textAlignment="center"
+        android:textColor="@color/Text_color_light" />
+
     <ProgressBar
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleLarge"
