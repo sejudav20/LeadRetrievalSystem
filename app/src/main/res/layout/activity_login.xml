@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/design_default_color_primary"
-        android:text="Welcome to Conference Pro \n Please Sign In or Sign Up"
+        android:text="@string/welcome_message"
         android:textAlignment="center"
         android:textColor="@color/Text_color_light" />
 
@@ -81,6 +81,11 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
+
+            <com.google.android.gms.common.SignInButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/google_sign_in_button"/>
 
         </LinearLayout>
     </ScrollView>
