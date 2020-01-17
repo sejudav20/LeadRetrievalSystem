@@ -60,14 +60,14 @@ public class LoginActivity extends AppCompatActivity {
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    SharedPreferences sd = getSharedPreferences("user", Context.MODE_PRIVATE);
+    SharedPreferences sd;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    SharedPreferences.Editor ed = sd.edit();
+    SharedPreferences.Editor ed;
 
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -76,6 +76,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
+        sd = getSharedPreferences("user", Context.MODE_PRIVATE);
+        ed= sd.edit();
         boolean isClear=false;
         if(account!=null){
             isClear=true;
