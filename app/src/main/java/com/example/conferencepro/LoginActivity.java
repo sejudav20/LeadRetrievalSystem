@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
             Toast.makeText(this,"Signing in "+account.getEmail(),Toast.LENGTH_LONG).show();
-            ed.putString("username",account.getEmail());
+            ed.putString("username",account.getEmail()).apply();
             startActivity(new Intent(this,MainActivity.class));
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -208,7 +208,9 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
 
             if (loginSuccessful(email, password)) {
-                ed.putString("username", email);
+                ed.putString("username", email).apply();
+                ed.putString(email+" role","").apply();
+
                 startActivity(new Intent(this, MainActivity.class));
 
 
