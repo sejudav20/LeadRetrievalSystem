@@ -15,4 +15,5 @@
     <string name="welcome_message">Welcome to Conference Pro   Please Sign In or Sign Up</string>
     <string name="title_activity_entrant_main">EntrantMain</string>
     <string name="title_activity_job_main">JobMain</string>
+    <string name="title_activity_user_data">UserData</string>
 </resources>

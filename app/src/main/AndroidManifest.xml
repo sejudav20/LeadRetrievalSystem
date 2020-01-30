@@ -13,10 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ConferenceUserData"></activity>
+        <activity
+            android:name=".UserData"
+            android:label="@string/title_activity_user_data"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".JobMain"
             android:label="@string/title_activity_job_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CoordinatorMain" />
         <activity
             android:name=".EntrantMain"
