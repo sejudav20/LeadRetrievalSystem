@@ -21,6 +21,11 @@ public class EntrantMain extends AppCompatActivity {
     String conference = "";
     Button b;
     Button toUserData;
+    public static String user;
+
+    public static String getUser() {
+        return user;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,7 @@ public class EntrantMain extends AppCompatActivity {
         });
 
 
-        String user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
+        user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
 
         tx = findViewById(R.id.WelcomeText);
         tx.setText("Welcome " + user);
