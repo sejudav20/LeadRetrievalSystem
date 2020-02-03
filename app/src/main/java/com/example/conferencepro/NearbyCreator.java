@@ -1,4 +1,4 @@
-package com.example.a2020scoutingapp;
+package com.example.conferencepro;
 
 import android.Manifest;
 import android.app.Activity;

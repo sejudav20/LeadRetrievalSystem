@@ -1,5 +1,6 @@
 package com.example.conferencepro;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -41,12 +42,19 @@ public class UserData extends AppCompatActivity {
         number=findViewById(R.id.phone);
         company=findViewById(R.id.company);
         currentRole=findViewById(R.id.currentRole);
+        toConferenceSettingsB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                    startActivity(new Intent(UserData.this, ConferenceUserData.class));
+                }
+        });
         saveB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences sp= getSharedPreferences("user",MODE_PRIVATE);
-                sp.edit().putString(EntrantMain.getUser(),""+DELIMETER+name.getText()+DELIMETER+email.getText()+DELIMETER+number.getText()+DELIMETER+company.getText()+DELIMETER+educationLevel.getSelectedItem().toString()+LinkedUrl.getText());
+                sp.edit().putString(EntrantMain.getUser(),""+DELIMETER+name.getText()+DELIMETER+email.getText()+DELIMETER+number.getText()+DELIMETER+company.getText()
+                        +DELIMETER+educationLevel.getSelectedItem().toString()+LinkedUrl.getText()).apply();
             }
         });
 
