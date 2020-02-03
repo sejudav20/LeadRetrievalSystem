@@ -13,12 +13,14 @@
         android:layout_width="206dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/]"
-        app:layout_constraintStart_toStartOf="parent" />
+
+        app:layout_constraintEnd_toStartOf="@+id/toConferenceButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/toConferenceButton"
@@ -31,6 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -118,7 +121,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/9"
+                android:id="@+id/c9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -141,7 +144,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/7642"
+                android:id="@+id/c7642"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -165,7 +168,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/902"
+                android:id="@+id/c902"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -31,4 +31,5 @@ dependencies {
 
     def nearby_version = "17.0.0"
     implementation "com.google.android.gms:play-services-nearby:$nearby_version"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }
