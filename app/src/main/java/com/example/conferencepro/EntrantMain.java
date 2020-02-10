@@ -74,7 +74,9 @@ public class EntrantMain extends AppCompatActivity {
 
                     @Override
                     public void OnStringReceived(String s) {
-                        String confname=new Scanner(s).next();
+                    Scanner sc=new Scanner(s);
+                    sc.useDelimiter(",");
+                        String confname=sc.next();
                         Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
                         SharedPreferences sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
                         sp.edit().putString("CData",s).apply();

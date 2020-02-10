@@ -26,7 +26,7 @@ public class ConferenceUserData extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conference_user_data);
         companies=new HashMap<>();
-        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString("cData",""));
+        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString("CData",""));
         sc.useDelimiter(",");
         String s=sc.next();
         while(sc.hasNext()){

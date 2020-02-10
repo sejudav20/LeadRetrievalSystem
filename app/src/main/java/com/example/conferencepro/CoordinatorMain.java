@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -13,10 +14,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo;
 import com.google.android.gms.nearby.connection.Strategy;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 
 public class CoordinatorMain extends AppCompatActivity implements RoleTransferDialogBox.RoleTransferCallback {
@@ -33,7 +36,9 @@ public class CoordinatorMain extends AppCompatActivity implements RoleTransferDi
     Set<String> companies;
     EditText addCompName;
     Button addComp;
-
+    TextView companyView;
+    String companyString="";
+    String conferenceString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,21 +48,33 @@ public class CoordinatorMain extends AppCompatActivity implements RoleTransferDi
 companies= new HashSet<>();
         addComp=findViewById(R.id.addCompany);
         addCompName=findViewById(R.id.editAddCompany);
-
+        companyView=findViewById(R.id.companyView);
         sp=getSharedPreferences("CoordData",MODE_PRIVATE);
         SharedPreferences spe=getSharedPreferences("user",MODE_PRIVATE);
         welcome.setText("Welcome "+spe.getString("username",""));
         createConference=findViewById(R.id.createNewConference);
         companies=sp.getStringSet("companies",new HashSet<String>());
+
+        for(String s:companies){
+            companyString+=s+",";
+        }
+        companyView.setText("Companies added: "+companyString);
         editConferenceName=findViewById(R.id.addConferenceName);
         conference=sp.getString("cName","");
         conferenceNumber=sp.getInt("cNum",0);
+        conferenceString= conferenceNumber+","+companyString+",";
+        sp.edit().putString("CData", conferenceString).apply();
+
         addComp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String company=addCompName.getText().toString();
-                if(company.equals("")||companies.contains(company)){
-                    
+                if(!(company.equals("")||companies.contains(company))){
+                    companies.add(company);
+                    companyString+=company+",";
+                    conferenceString +=company+",";
+                }else{
+                    addComp.setError("Enter a company that is not already added");
                 }
             }
         });
@@ -92,7 +109,7 @@ companies= new HashSet<>();
         addComp.setVisibility(View.VISIBLE);
         addCompName.setVisibility(View.VISIBLE);
 
-        name="";
+        name="ConfName";
         nc= new NearbyCreator(this,name, Strategy.P2P_CLUSTER);
 
 
@@ -133,7 +150,7 @@ companies= new HashSet<>();
             nc.startDiscovery("Conference receiver" ,);
 
         }else{
-            nc.startAdvertising("");
+            nc.startAdvertising("",optionsOfAdvertising);
 
         }
     }
@@ -142,4 +159,148 @@ companies= new HashSet<>();
     public void whenNegativeButtonClicked() {
 
     }
+
+    public NearbyCreator.OptionsOfDiscovery optionsOfDiscovery=new NearbyCreator.OptionsOfDiscovery() {
+        @Override
+        public void OnDiscoverySuccess() {
+            Toast.makeText(CoordinatorMain.this,"Discovering you have 1 minute to find other conference app",Toast.LENGTH_SHORT).show();
+            Toast.makeText(CoordinatorMain.this,"Discovering you have 1 minute",Toast.LENGTH_SHORT).show();
+            new CountDownTimer(60000,50000){
+
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    Toast.makeText(CoordinatorMain.this,"Discovering Time Out",Toast.LENGTH_SHORT).show();
+                    nc.stopDiscovery();
+                }
+            }.start();
+
+        }
+
+        @Override
+        public void OnDiscoveryFailure() {
+
+        }
+
+        @Override
+        public void OnStringReceived(String s) {
+            Scanner sc= new Scanner(s);
+            sc.useDelimiter(",");
+            if(s.equals("ConfName")) {
+                sp.edit().putString("CData", s).apply();
+                Toast.makeText(CoordinatorMain.this, "Discovering Time Out", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void OnStringUpdate() {
+
+        }
+
+        @Override
+        public void OnConnectionGood(String s) {
+
+        }
+
+        @Override
+        public void OnConnectionError() {
+
+        }
+
+        @Override
+        public void OnConnectionRejected() {
+
+        }
+
+        @Override
+        public void OnConnectionDisconnected() {
+
+        }
+
+        @Override
+        public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
+            return false;
+        }
+
+        @Override
+        public void OnConnectionSuccess() {
+
+        }
+
+        @Override
+        public void OnConnectionFailure() {
+
+        }
+
+        @Override
+        public void OnConnectionLost() {
+
+        }
+    };
+    public NearbyCreator.OptionsOfAdvertising optionsOfAdvertising= new NearbyCreator.OptionsOfAdvertising() {
+        @Override
+        public void OnDiscoverySuccess() {
+            Toast.makeText(CoordinatorMain.this,"Discovering you have 1 minute",Toast.LENGTH_SHORT).show();
+            new CountDownTimer(60000,50000){
+
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    Toast.makeText(CoordinatorMain.this,"Discovering Time Out",Toast.LENGTH_SHORT).show();
+                    nc.stopDiscovery();
+                }
+            }.start();
+
+        }
+
+        @Override
+        public void OnDiscoveryFailure() {
+            Toast.makeText(CoordinatorMain.this,"DiscoveryFailure",Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void OnStringReceived(String s) {
+
+        }
+
+        @Override
+        public void OnStringUpdate() {
+
+        }
+
+        @Override
+        public void OnConnectionGood(String s) {
+            nc.stopDiscovery();
+            nc.sendMessage(s,conferenceString);
+        }
+
+        @Override
+        public void OnConnectionError() {
+
+        }
+
+        @Override
+        public void OnConnectionRejected() {
+
+        }
+
+        @Override
+        public void OnConnectionDisconnected() {
+
+        }
+    };
+
+
+
+
+
 }
