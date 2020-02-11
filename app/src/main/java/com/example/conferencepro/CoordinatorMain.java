@@ -62,7 +62,7 @@ companies= new HashSet<>();
         editConferenceName=findViewById(R.id.addConferenceName);
         conference=sp.getString("cName","");
         conferenceNumber=sp.getInt("cNum",0);
-        conferenceString= conferenceNumber+","+companyString+",";
+        conferenceString= conferenceNumber+","+conference+","+companyString+",";
         sp.edit().putString("CData", conferenceString).apply();
 
         addComp.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +147,7 @@ companies= new HashSet<>();
     @Override
     public void whenPositiveButtonClicked() {
         if(isReceiving){
-            nc.startDiscovery("Conference receiver" ,);
+            nc.startDiscovery("Conference receiver" ,optionsOfDiscovery);
 
         }else{
             nc.startAdvertising("",optionsOfAdvertising);
@@ -164,7 +164,6 @@ companies= new HashSet<>();
         @Override
         public void OnDiscoverySuccess() {
             Toast.makeText(CoordinatorMain.this,"Discovering you have 1 minute to find other conference app",Toast.LENGTH_SHORT).show();
-            Toast.makeText(CoordinatorMain.this,"Discovering you have 1 minute",Toast.LENGTH_SHORT).show();
             new CountDownTimer(60000,50000){
 
                 @Override
@@ -190,9 +189,24 @@ companies= new HashSet<>();
         public void OnStringReceived(String s) {
             Scanner sc= new Scanner(s);
             sc.useDelimiter(",");
+            boolean n=false;
             if(s.equals("ConfName")) {
+                n=true;
                 sp.edit().putString("CData", s).apply();
-                Toast.makeText(CoordinatorMain.this, "Discovering Time Out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CoordinatorMain.this, "Received updated string", Toast.LENGTH_SHORT).show();
+                sp.edit().putString("cNum",sc.next()).apply();
+                sp.edit().putString("cName",sc.next()).apply();
+                HashSet<String> str=new HashSet<>();
+                while(sc.hasNext()){
+                    str.add(sc.next());
+                }
+                sp.edit().putStringSet("companies",str).apply();
+            }
+            Toast.makeText(CoordinatorMain.this,"Successful disconnecting",Toast.LENGTH_SHORT).show();
+            nc.stopAllConnections();
+            if(n){
+                recreate();
+
             }
         }
 
@@ -203,6 +217,7 @@ companies= new HashSet<>();
 
         @Override
         public void OnConnectionGood(String s) {
+            Toast.makeText(CoordinatorMain.this, "Connection is good", Toast.LENGTH_SHORT).show();
 
         }
 
