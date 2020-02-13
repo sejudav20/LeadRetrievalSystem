@@ -3,7 +3,6 @@ package com.example.conferencepro;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -186,7 +185,7 @@ companies= new HashSet<>();
         }
 
         @Override
-        public void OnStringReceived(String s) {
+        public void OnStringReceived(String s,String user) {
             Scanner sc= new Scanner(s);
             sc.useDelimiter(",");
             boolean n=false;
@@ -283,7 +282,7 @@ companies= new HashSet<>();
         }
 
         @Override
-        public void OnStringReceived(String s) {
+        public void OnStringReceived(String s1, String s) {
 
         }
 

@@ -73,7 +73,7 @@ public class EntrantMain extends AppCompatActivity {
                     }
 
                     @Override
-                    public void OnStringReceived(String s) {
+                    public void OnStringReceived(String s,String user) {
                     Scanner sc=new Scanner(s);
                     sc.useDelimiter(",");
                         String confname=sc.next();
