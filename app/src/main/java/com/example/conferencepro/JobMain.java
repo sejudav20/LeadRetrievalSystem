@@ -116,6 +116,11 @@ public class JobMain extends AppCompatActivity {
                   while(!(strings.size()>VIEWCAPACITY)){
                       strings.remove();
                   }
+                  String s= "Data Received ";
+                  for(String string:strings){
+                      s+="\n"+string;
+                  }
+
               }
             }
         };
@@ -151,7 +156,6 @@ public class JobMain extends AppCompatActivity {
                 //TODO add database stuff
             }else{
                 nc.stopConnection(s);
-
             }
         }
 
