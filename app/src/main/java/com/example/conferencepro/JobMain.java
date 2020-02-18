@@ -3,6 +3,7 @@ package com.example.conferencepro;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.google.android.gms.nearby.connection.Strategy;
@@ -15,6 +16,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.widget.Button;
@@ -24,8 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 public class JobMain extends AppCompatActivity {
     Button viewData;
@@ -43,13 +47,13 @@ public class JobMain extends AppCompatActivity {
     String jobName;
     boolean advertising=false;
     TextView viewPeople;
+    ApplicantRepository repository;
     private final static int VIEWCAPACITY=12;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         sp = getSharedPreferences("jobData", MODE_PRIVATE);
         spe = sp.edit();
         conferenceID = sp.getString("ID", "");
@@ -72,6 +76,7 @@ public class JobMain extends AppCompatActivity {
         enterCompany = findViewById(R.id.editConpNameJo);
         enterConference = findViewById(R.id.editConfIDJo);
         submitForm = findViewById(R.id.AddConference);
+        repository=new ApplicantRepository(this.getApplication());
         submitForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,12 +105,19 @@ public class JobMain extends AppCompatActivity {
 
             }
         });
+        final int c=advertise.getSolidColor();
         advertise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(advertising){nc.stopAdvertising();}else{
-                    nc.startAdvertising(jobName,optionsOfAdvertising);
+                if(advertising){nc.stopAdvertising();
+                advertising=false;
+                advertise.setText("Advertise");
+                advertise.setBackgroundColor(c);
 
+                }else{
+                    nc.startAdvertising(jobName,optionsOfAdvertising);
+                    advertising=true;
+                    advertise.setBackgroundColor(Color.RED);
                 }
             }
         });
@@ -119,10 +131,11 @@ public class JobMain extends AppCompatActivity {
               }
             }
         };
-
+        people=getPeople();
+        people.observe(this,queueObserver);
 
     }
-    MutableLiveData<Queue<String>> people;
+    LiveData<Queue<String>> people;
     public LiveData<Queue<String>> getPeople(){
         if(people==null){
             people=new MutableLiveData<Queue<String>>();
@@ -130,7 +143,13 @@ public class JobMain extends AppCompatActivity {
         return people;
 
     }
+    public void addPerson(String p){
 
+        people.getValue().add(p);
+    }
+        EntrantData ed;
+    ApplicantInfo applicantInfo;
+    long time;
     NearbyCreator.OptionsOfAdvertising optionsOfAdvertising= new NearbyCreator.OptionsOfAdvertising() {
         @Override
         public void OnDiscoverySuccess() {
@@ -139,19 +158,41 @@ public class JobMain extends AppCompatActivity {
         }
 
         @Override
-        public void OnDiscoveryFailure() {
-
+        public void OnDiscoveryFailure(Exception e) {
+            Toast.makeText(JobMain.this,"Failed to discover",Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void OnStringReceived(String s1, String s) {
-            Scanner sc= new Scanner(s);
-            if(sc.next().equals(conferenceID)) {
-                people.getValue().add(s);
-                //TODO add database stuff
-            }else{
-                nc.stopConnection(s);
+            try {
+            List<EntrantData> ede=repository.getSpecificEntrantData(s1).getValue();
 
+                if(ede.size()==0){
+                Scanner sc= new Scanner(s);
+                if(sc.next().equals(conferenceID)) {
+                    addPerson(s1);
+                    String name = sc.next();
+                    String email = sc.next();
+                    String number = sc.next();
+                    String company = sc.next();
+                    String currentRole = sc.next();
+                    String educationLevel = sc.next();
+                    String linkedUrl = sc.next();
+                    applicantInfo = new ApplicantInfo(email, number, educationLevel, currentRole, company, linkedUrl);
+                    ed = new EntrantData(name, applicantInfo.getUserId(), 0, 1);
+                }
+                    //TODO add database stuff
+                else{
+                    nc.stopConnection(s1);
+
+                }
+            }else{
+                    ed=ede.get(0);
+                    applicantInfo=repository.getSpecificApplicantInfo(ed.getUserData()).get(0);
+                }} catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
@@ -162,7 +203,7 @@ public class JobMain extends AppCompatActivity {
 
         @Override
         public void OnConnectionGood(String s) {
-
+            time=System.currentTimeMillis();
         }
 
         @Override
@@ -177,7 +218,12 @@ public class JobMain extends AppCompatActivity {
 
         @Override
         public void OnConnectionDisconnected() {
+            if(ed!=null){
+                ed.setTimeStayed(ed.getTimeStayed()+(time-System.currentTimeMillis()));
+                ed.setTimesVisited(ed.getTimesVisited()+1);
+                repository.insert(ed,applicantInfo);
 
+            }
         }
     };
 

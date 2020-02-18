@@ -50,7 +50,7 @@ public class EntrantMain extends AppCompatActivity {
         tx23.setVisibility(View.INVISIBLE);
         confNumber=findViewById(R.id.confNumber);
         tx = findViewById(R.id.welcomeText);
-        if (sp.getString("cName","").equals("")) {
+        if (sp.getString(user+" cName","").equals("")) {
 
             b.setVisibility(View.VISIBLE);
             confNumber.setVisibility(View.VISIBLE);
@@ -71,7 +71,7 @@ public class EntrantMain extends AppCompatActivity {
                 }
 
                 @Override
-                public void OnDiscoveryFailure() {
+                public void OnDiscoveryFailure(Exception e) {
                     Toast.makeText(EntrantMain.this,"Discovery of conferences Failed",Toast.LENGTH_LONG).show();
                 }
 
@@ -82,8 +82,8 @@ public class EntrantMain extends AppCompatActivity {
                     String confname=sc.next();
                     Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
                     SharedPreferences sp1 = getSharedPreferences("ConferenceData",MODE_PRIVATE);
-                    sp1.edit().putString("CData",s).apply();
-                    sp1.edit().putString("cName",confname).apply();
+                    sp1.edit().putString(user+" CData",s).apply();
+                    sp1.edit().putString(user+" cName",confname).apply();
                     b.setVisibility(View.INVISIBLE);
                     confNumber.setVisibility(View.INVISIBLE);
                     txe.setText("Current Conference is:"+ sp1.getString("cName",""));
@@ -127,7 +127,7 @@ public class EntrantMain extends AppCompatActivity {
                 }
 
                 @Override
-                public void OnConnectionFailure() {
+                public void OnConnectionFailure(Exception e) {
                     Toast.makeText(EntrantMain.this,"Connection did not work",Toast.LENGTH_LONG).show();
                 }
 

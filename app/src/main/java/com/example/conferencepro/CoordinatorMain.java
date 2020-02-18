@@ -94,6 +94,7 @@ companies= new HashSet<>();
 
                     }else{
                         sp.edit().putString(user+" cName",editConferenceName.getText().toString()).apply();
+                       conference=sp.getString(user+" cName","");
                         sp.edit().putInt(user+" cNum",new Random().nextInt(200000)+1).apply();
                         confNumbers.setText(sp.getInt(user+" cNum",0)+"");
                         addComp.setVisibility(View.VISIBLE);
@@ -112,7 +113,7 @@ companies= new HashSet<>();
         addComp.setVisibility(View.VISIBLE);
         addCompName.setVisibility(View.VISIBLE);
 
-        name="ConfName";
+        name=conference;
         nc= new NearbyCreator(this,name, Strategy.P2P_CLUSTER);
 
 

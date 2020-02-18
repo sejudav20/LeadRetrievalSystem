@@ -23,6 +23,29 @@ public class ApplicantRepository {
             e.printStackTrace();
         }
     }
+    public void delete(EntrantData ed){
+
+            new deleteTask(dao).execute(ed);
+
+    }
+    public void update(EntrantData entrantData){
+       new updateDataAsyncTask(dao).execute(entrantData);
+    }
+    public void insert(EntrantData ed,ApplicantInfo ai){
+
+        new insertTask(dao).execute(ed,ai);
+
+    }
+
+    public void delete(String name){
+        try {
+            new deleteTask(dao).execute(getSpecificEntrantData(name).getValue().get(0));
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     public LiveData<List<EntrantData>> getAllData(){
         return allData;
     }
@@ -127,7 +150,21 @@ public class ApplicantRepository {
         @Override
         protected LiveData<List<EntrantData>> doInBackground(String... keys) {
 
-            return mAsyncTaskDao.getSpecificEntrantData(keys[0]);
+            return mAsyncTaskDao.getSpecificEntrantData("%"+keys[0]+"%");
+        }
+    }
+    private static class updateDataAsyncTask extends AsyncTask<EntrantData, Void, Void> {
+
+        private AccessDao mAsyncTaskDao;
+
+        updateDataAsyncTask(AccessDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(EntrantData... ed) {
+            mAsyncTaskDao.update(ed[0]);
+            return null;
         }
     }
 

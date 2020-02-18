@@ -36,12 +36,12 @@ public class UserData extends AppCompatActivity {
 
         saveB=findViewById(R.id.save);
         toConferenceSettingsB=findViewById(R.id.toConferenceButton);
-        email=findViewById(R.id.email);
+        email=findViewById(R.id.TimesVisited);
         name=findViewById(R.id.NameEdit);
         LinkedUrl=findViewById(R.id.linked);
         educationLevel=findViewById(R.id.education);
         number=findViewById(R.id.phone);
-        company=findViewById(R.id.company);
+        company=findViewById(R.id.Company);
         currentRole=findViewById(R.id.currentRole);
         ArrayList<String> edu=new ArrayList<>();
         edu.add("Highschool");
@@ -61,16 +61,16 @@ public class UserData extends AppCompatActivity {
                 startActivity(new Intent(UserData.this, ConferenceUserData.class));}
             });
         saveB.setOnClickListener(view -> {
-            SharedPreferences sp= getSharedPreferences("user",MODE_PRIVATE);
-            sp.edit().putString(EntrantMain.getUser(),""+DELIMETER+name.getText()+" "+DELIMETER+email.getText()+" "+DELIMETER+number.getText()+" "+DELIMETER+company.getText()
-                    +" "+DELIMETER+educationLevel.getSelectedItem().toString()+LinkedUrl.getText()+" ").apply();
+            SharedPreferences sp= getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE);
+            sp.edit().putString("userData",""+DELIMETER+name.getText()+" "+DELIMETER+email.getText()+" "+DELIMETER+number.getText()+" "+DELIMETER+company.getText()
+                    +" "+DELIMETER+currentRole.getText()+" "+DELIMETER+educationLevel.getSelectedItem().toString()+DELIMETER+LinkedUrl.getText()+" ").apply();
             Toast.makeText(UserData.this,"Saved",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(UserData.this,EntrantMain.class));
         });
 
-        SharedPreferences sp= getSharedPreferences("user",MODE_PRIVATE);
-        if(!sp.getString(EntrantMain.getUser(),"").equals("")) {
-            Scanner sc = new Scanner(sp.getString(EntrantMain.getUser(), ""));
+        SharedPreferences sp= getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE);
+        if(!sp.getString("userData","").equals("")) {
+            Scanner sc = new Scanner(sp.getString("userData", ""));
             String s=sc.next();
             name.setText(s.substring(0,s.length()-2));
             s=sc.next();
@@ -79,6 +79,8 @@ public class UserData extends AppCompatActivity {
             number.setText(s.substring(0,s.length()-2));
             s=sc.next();
            company.setText(s.substring(0,s.length()-2));
+           s=sc.next();
+           currentRole.setText(s.substring(0,s.length()-2));
            s=sc.next();
            s=sc.next();
            LinkedUrl.setText(s.substring(0,s.length()-2));

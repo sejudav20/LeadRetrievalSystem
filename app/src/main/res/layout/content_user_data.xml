@@ -81,7 +81,7 @@
                 android:text="Company/School(current or last)" />
 
             <EditText
-                android:id="@+id/company"
+                android:id="@+id/Company"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -128,7 +128,7 @@
                 android:text="Email" />
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/TimesVisited"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

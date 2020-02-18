@@ -11,7 +11,7 @@ public class EntrantData {
    @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo()
-    private int name;
+    private String name;
 
     public int getId() {
         return id;
@@ -21,18 +21,18 @@ public class EntrantData {
         this.id = id;
     }
 
-    public EntrantData(int name, int userData, int timesVisited, int timeStayed) {
+    public EntrantData(String name, int userData, int timesVisited, int timeStayed) {
         this.name = name;
         this.userData = userData;
         this.timesVisited = timesVisited;
         this.timeStayed = timeStayed;
     }
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -52,11 +52,11 @@ public class EntrantData {
         this.timesVisited = timesVisited;
     }
 
-    public int getTimeStayed() {
+    public long getTimeStayed() {
         return timeStayed;
     }
 
-    public void setTimeStayed(int timeStayed) {
+    public void setTimeStayed(long timeStayed) {
         this.timeStayed = timeStayed;
     }
 
@@ -66,5 +66,5 @@ public class EntrantData {
     @ColumnInfo()
     private int timesVisited;
    @ColumnInfo()
-    private int timeStayed;
+    private long timeStayed;
 }
