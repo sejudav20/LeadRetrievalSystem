@@ -18,7 +18,6 @@ public class JobViewData extends AppCompatActivity {
         setContentView(R.layout.activity_job_view_data);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

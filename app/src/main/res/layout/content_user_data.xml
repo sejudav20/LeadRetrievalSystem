@@ -156,8 +156,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
+                android:hint="eg, student"
+                android:inputType="textPersonName" />
 
         </LinearLayout>
 
@@ -201,8 +201,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
+                android:hint="eg. https://www.linkedin.com/in/williamhgates?trk=public_profile_browsemap_profile-result-card_result-card_full-click"
+                android:inputType="textPersonName" />
 
         </LinearLayout>
 

@@ -47,15 +47,15 @@ public class NearbyCreator {
 
     this.strategy = strategy;
   }
-///Call this static method to get permission from user
+  ///Call this static method to get permission from user
   public static void  getPermissionToUseNearby(Activity activityContext){
 
 
-      if(ContextCompat.checkSelfPermission(activityContext, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-        ActivityCompat.requestPermissions(activityContext,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                2);
-      }
+    if(ContextCompat.checkSelfPermission(activityContext, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+      ActivityCompat.requestPermissions(activityContext,
+              new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+              2);
+    }
 
 
 
@@ -107,8 +107,8 @@ public class NearbyCreator {
       }
 
       @Override
-      public void OnFailure() {
-        optionsOfAdvertising.OnDiscoveryFailure();
+      public void OnFailure(Exception e) {
+        optionsOfAdvertising.OnDiscoveryFailure(e);
       }
     }, new ConnectionResult() {
       @Override
@@ -132,8 +132,8 @@ public class NearbyCreator {
       }
     }, new StringReceived() {
       @Override
-      public void OnStringReceived(String s,String user) {
-        optionsOfAdvertising.OnStringReceived(s,user);
+      public void OnStringReceived(String user, String s) {
+        optionsOfAdvertising.OnStringReceived(user,s);
       }
 
       @Override
@@ -151,7 +151,7 @@ public class NearbyCreator {
       @Override
       public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
         String es = new String(payload.asBytes());
-        stringOptions.OnStringReceived(es,s);
+        stringOptions.OnStringReceived(s,es);
       }
 
       @Override
@@ -198,17 +198,17 @@ public class NearbyCreator {
 
     AdvertisingOptions advertisingOptions = new AdvertisingOptions.Builder().setStrategy(strategy).build();
     Nearby.getConnectionsClient(context)
-        .startAdvertising(advertiserName, id, connectionLifecycleCallback, advertisingOptions)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-          @Override
-          public void onSuccess(Void aVoid) {
+            .startAdvertising(advertiserName, id, connectionLifecycleCallback, advertisingOptions)
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+              @Override
+              public void onSuccess(Void aVoid) {
 
-            options.OnSuccess();
-          }
-        }).addOnFailureListener(new OnFailureListener() {
+                options.OnSuccess();
+              }
+            }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception e) {
-        options.OnSuccess();
+        options.OnFailure(e);
       }
     });
 
@@ -229,8 +229,8 @@ public class NearbyCreator {
       }
 
       @Override
-      public void OnFailure() {
-        optionsOfDiscovery.OnDiscoveryFailure();
+      public void OnFailure(Exception e) {
+        optionsOfDiscovery.OnDiscoveryFailure(e);
       }
     }, new OnEndPointFound() {
       @Override
@@ -245,8 +245,8 @@ public class NearbyCreator {
       }
 
       @Override
-      public void OnConnectionFailure() {
-        optionsOfDiscovery.OnConnectionFailure();
+      public void OnConnectionFailure(Exception e) {
+        optionsOfDiscovery.OnConnectionFailure(e);
       }
 
       @Override
@@ -275,8 +275,8 @@ public class NearbyCreator {
       }
     }, new StringReceived() {
       @Override
-      public void OnStringReceived(String es, String s) {
-        optionsOfDiscovery.OnStringReceived(es,s);
+      public void OnStringReceived(String s1, String s) {
+        optionsOfDiscovery.OnStringReceived(s1,s);
       }
 
       @Override
@@ -296,7 +296,7 @@ public class NearbyCreator {
       public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
         String es = new String(payload.asBytes());
         if(connections.contains(s)){
-        stringOptions.OnStringReceived(es, s);}
+          stringOptions.OnStringReceived(s, es);}
       }
 
       @Override
@@ -344,24 +344,24 @@ public class NearbyCreator {
       public void onEndpointFound(@NonNull String s, @NonNull final DiscoveredEndpointInfo discoveredEndpointInfo) {
 
         Nearby.getConnectionsClient(context)
-            .requestConnection(name, s, connectionLifecycleCallback)
-            .addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                  @Override
-                  public void onSuccess(Void aVoid) {
-                    if (endPointOption.Authenticated(discoveredEndpointInfo)) {
-                      endPointOption.OnConnectionSuccess();
-                    }
+                .requestConnection(name, s, connectionLifecycleCallback)
+                .addOnSuccessListener(
+                        new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void aVoid) {
+                            if (endPointOption.Authenticated(discoveredEndpointInfo)) {
+                              endPointOption.OnConnectionSuccess();
+                            }
 
-                  }
-                })
-            .addOnFailureListener(
-                new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception e) {
-                    endPointOption.OnConnectionFailure();
-                  }
-                });
+                          }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception e) {
+                            endPointOption.OnConnectionFailure(e);
+                          }
+                        });
       }
 
       @Override
@@ -382,7 +382,7 @@ public class NearbyCreator {
     }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception e) {
-        options.OnFailure();
+        options.OnFailure(e);
 
       }
     });
@@ -392,9 +392,9 @@ public class NearbyCreator {
   public  interface OptionsOfAdvertising {
     void OnDiscoverySuccess();
 
-    void OnDiscoveryFailure();
+    void OnDiscoveryFailure(Exception e);
 
-    void OnStringReceived(String s1, String s);
+    void OnStringReceived(String user, String s);
 
     void OnStringUpdate();
 
@@ -412,9 +412,9 @@ public class NearbyCreator {
   public interface OptionsOfDiscovery {
     void OnDiscoverySuccess();
 
-    void OnDiscoveryFailure();
+    void OnDiscoveryFailure(Exception e);
 
-    void OnStringReceived(String s,String user);
+    void OnStringReceived(String user, String s);
 
     void OnStringUpdate();
 
@@ -430,7 +430,7 @@ public class NearbyCreator {
 
     void OnConnectionSuccess();
 
-    void OnConnectionFailure();
+    void OnConnectionFailure(Exception e);
 
     //If connection is lost
     void OnConnectionLost();
@@ -441,19 +441,19 @@ public class NearbyCreator {
   private interface OnDiscoveryTry {
     void OnSuccess();
 
-    void OnFailure();
+    void OnFailure(Exception e);
   }
 
   //this interface is called when the app advertises
   private interface OnAdvertisingTry {
     void OnSuccess();
 
-    void OnFailure();
+    void OnFailure(Exception e);
   }
 
   // this is called when a string is sent
   private interface StringReceived {
-    void OnStringReceived(String es, String s);
+    void OnStringReceived(String s1, String s);
 
     //When string is succesfully transfered
     void OnUpdate();
@@ -482,7 +482,7 @@ public class NearbyCreator {
 
     void OnConnectionSuccess();
 
-    void OnConnectionFailure();
+    void OnConnectionFailure(Exception e);
 
     //If connection is lost
     void onConnectionLost();
