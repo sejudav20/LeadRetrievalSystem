@@ -42,7 +42,7 @@ public class UserData extends AppCompatActivity {
         educationLevel=findViewById(R.id.education);
         number=findViewById(R.id.phone);
         company=findViewById(R.id.Company);
-        currentRole=findViewById(R.id.currentRole);
+        currentRole=findViewById(R.id.currentRoleView);
         ArrayList<String> edu=new ArrayList<>();
         edu.add("Highschool");
         edu.add("Bachelors");
