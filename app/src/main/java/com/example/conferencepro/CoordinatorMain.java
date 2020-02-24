@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,8 @@ public class CoordinatorMain extends AppCompatActivity implements RoleTransferDi
     TextView companyView;
     String companyString="";
     String conferenceString;
+    String user;
+    LinearLayout ll;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,40 +51,40 @@ companies= new HashSet<>();
         addComp=findViewById(R.id.addCompany);
         addCompName=findViewById(R.id.editAddCompany);
         companyView=findViewById(R.id.companyView);
+        welcome=findViewById(R.id.WelcomeTextC);
         sp=getSharedPreferences("CoordData",MODE_PRIVATE);
         SharedPreferences spe=getSharedPreferences("user",MODE_PRIVATE);
         welcome.setText("Welcome "+spe.getString("username",""));
         createConference=findViewById(R.id.createNewConference);
         companies=sp.getStringSet("companies",new HashSet<String>());
+        user= MainActivity.user;
+        ll=findViewById(R.id.linearLayout2);
 
-        for(String s:companies){
-            companyString+=s+",";
-        }
-        companyView.setText("Companies added: "+companyString);
+        companyView.setText("Companies added: ");
         editConferenceName=findViewById(R.id.addConferenceName);
-        conference=sp.getString("cName","");
-        conferenceNumber=sp.getInt("cNum",0);
+        conference=sp.getString(user+ " cName","");
+        conferenceNumber=sp.getInt(user+" cNum",0);
         conferenceString= conferenceNumber+","+conference+","+companyString+",";
-        sp.edit().putString("CData", conferenceString).apply();
-
+        sp.edit().putString(user+" CData", conferenceString).apply();
+        updateCompanies();
         addComp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String company=addCompName.getText().toString();
                 if(!(company.equals("")||companies.contains(company))){
                     companies.add(company);
-                    companyString+=company+",";
-                    conferenceString +=company+",";
+
+                    updateCompanies();
                 }else{
-                    addComp.setError("Enter a company that is not already added");
+                    addCompName.setError("Enter a company that is not already added");
                 }
             }
         });
         if(conferenceNumber==0){
             createConference.setVisibility(View.VISIBLE);
             editConferenceName.setVisibility(View.VISIBLE);
-            addComp.setVisibility(View.INVISIBLE);
-            addCompName.setVisibility(View.INVISIBLE);
+            ll.setVisibility(View.INVISIBLE);
+            confNumbers.setText("");
             createConference.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -90,13 +93,15 @@ companies= new HashSet<>();
                         editConferenceName.setError("Please enter a name");
 
                     }else{
-                        sp.edit().putString("cName",editConferenceName.getText().toString()).apply();
-                        sp.edit().putInt("cNum",new Random().nextInt(200000)+1).apply();
+                        sp.edit().putString(user+" cName",editConferenceName.getText().toString()).apply();
+                       conference=sp.getString(user+" cName","");
+                        sp.edit().putInt(user+" cNum",new Random().nextInt(200000)+1).apply();
+                        confNumbers.setText(sp.getInt(user+" cNum",0)+"");
                         addComp.setVisibility(View.VISIBLE);
                         addCompName.setVisibility(View.VISIBLE);
                         createConference.setVisibility(View.INVISIBLE);
                         editConferenceName.setVisibility(View.INVISIBLE);
-
+                        ll.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -108,7 +113,7 @@ companies= new HashSet<>();
         addComp.setVisibility(View.VISIBLE);
         addCompName.setVisibility(View.VISIBLE);
 
-        name="ConfName";
+        name=conference;
         nc= new NearbyCreator(this,name, Strategy.P2P_CLUSTER);
 
 
@@ -180,12 +185,12 @@ companies= new HashSet<>();
         }
 
         @Override
-        public void OnDiscoveryFailure() {
+        public void OnDiscoveryFailure(Exception e) {
 
         }
 
         @Override
-        public void OnStringReceived(String s,String user) {
+        public void OnStringReceived(String user,String s) {
             Scanner sc= new Scanner(s);
             sc.useDelimiter(",");
             boolean n=false;
@@ -246,7 +251,7 @@ companies= new HashSet<>();
         }
 
         @Override
-        public void OnConnectionFailure() {
+        public void OnConnectionFailure(Exception e) {
 
         }
 
@@ -276,7 +281,7 @@ companies= new HashSet<>();
         }
 
         @Override
-        public void OnDiscoveryFailure() {
+        public void OnDiscoveryFailure(Exception e) {
             Toast.makeText(CoordinatorMain.this,"DiscoveryFailure",Toast.LENGTH_SHORT).show();
 
         }
@@ -313,7 +318,12 @@ companies= new HashSet<>();
         }
     };
 
-
+public void updateCompanies(){
+    for(String s:companies){
+        companyString+=s+"\n";
+    }
+    companyView.setText("Companies Added:"+companyString);
+}
 
 
 

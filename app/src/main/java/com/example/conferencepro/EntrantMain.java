@@ -11,7 +11,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +29,7 @@ public class EntrantMain extends AppCompatActivity {
     Button toUserData;
     EditText confNumber;
     TextView txe;
+    TextView tx23;
     public static String user;
 
     public static String getUser() {
@@ -40,125 +40,118 @@ public class EntrantMain extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         SharedPreferences sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
         b = findViewById(R.id.AddConference);
         txe=findViewById(R.id.textView3);
+
+        tx23=findViewById(R.id.tv23);
         b.setVisibility(View.INVISIBLE);
-        if (sp.getString("cName","").equals("")) {
+        tx23.setVisibility(View.INVISIBLE);
+        confNumber=findViewById(R.id.confNumber);
+        tx = findViewById(R.id.welcomeText);
+        if (sp.getString(user+" cName","").equals("")) {
 
             b.setVisibility(View.VISIBLE);
             confNumber.setVisibility(View.VISIBLE);
+            tx23.setVisibility(View.VISIBLE);
             txe.setText("No conference Joined:");
         }else{
             txe.setText("Current Conference is:"+sp.getString("cName",""));
         }
-        confNumber= findViewById(R.id.editText);
+        confNumber= findViewById(R.id.confNumber);
 
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        b.setOnClickListener(view -> {
 
-                NearbyCreator nc= new NearbyCreator(EntrantMain.this,"Usr", Strategy.P2P_CLUSTER);
-                nc.startDiscovery(confNumber.getText().toString()+" "+new Random().nextInt(10000000),new NearbyCreator.OptionsOfDiscovery(){
-                    @Override
-                    public void OnDiscoverySuccess() {
-                        Toast.makeText(EntrantMain.this,"Discovery of conferences starting",Toast.LENGTH_SHORT).show();
-                    }
+            NearbyCreator nc= new NearbyCreator(EntrantMain.this,"Usr", Strategy.P2P_CLUSTER);
+            nc.startDiscovery(confNumber.getText().toString()+" "+new Random().nextInt(10000000),new NearbyCreator.OptionsOfDiscovery(){
+                @Override
+                public void OnDiscoverySuccess() {
+                    Toast.makeText(EntrantMain.this,"Discovery of conferences starting",Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void OnDiscoveryFailure() {
-                        Toast.makeText(EntrantMain.this,"Discovery of conferences Failed",Toast.LENGTH_LONG).show();
-                    }
+                @Override
+                public void OnDiscoveryFailure(Exception e) {
+                    Toast.makeText(EntrantMain.this,"Discovery of conferences Failed",Toast.LENGTH_LONG).show();
+                }
 
-                    @Override
-                    public void OnStringReceived(String s,String user) {
-                    Scanner sc=new Scanner(s);
-                    sc.useDelimiter(",");
-                        String confname=sc.next();
-                        Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
-                        SharedPreferences sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
-                        sp.edit().putString("CData",s).apply();
-                        sp.edit().putString("cName",confname).apply();
-                        b.setVisibility(View.INVISIBLE);
-                        confNumber.setVisibility(View.INVISIBLE);
-                        txe.setText("Current Conference is:"+sp.getString("cName",""));
-                    }
+                @Override
+                public void OnStringReceived(String s,String user) {
+                Scanner sc=new Scanner(s);
+                sc.useDelimiter(",");
+                    String confname=sc.next();
+                    Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
+                    SharedPreferences sp1 = getSharedPreferences("ConferenceData",MODE_PRIVATE);
+                    sp1.edit().putString(user+" CData",s).apply();
+                    sp1.edit().putString(user+" cName",confname).apply();
+                    b.setVisibility(View.INVISIBLE);
+                    confNumber.setVisibility(View.INVISIBLE);
+                    txe.setText("Current Conference is:"+ sp1.getString("cName",""));
+                    tx23.setVisibility(View.INVISIBLE);
+                }
 
-                    @Override
-                    public void OnStringUpdate() {
+                @Override
+                public void OnStringUpdate() {
 
-                    }
+                }
 
-                    @Override
-                    public void OnConnectionGood(String s) {
+                @Override
+                public void OnConnectionGood(String s) {
 
-                    }
+                }
 
-                    @Override
-                    public void OnConnectionError() {
+                @Override
+                public void OnConnectionError() {
 
-                    }
+                }
 
-                    @Override
-                    public void OnConnectionRejected() {
+                @Override
+                public void OnConnectionRejected() {
 
-                    }
+                }
 
-                    @Override
-                    public void OnConnectionDisconnected() {
+                @Override
+                public void OnConnectionDisconnected() {
 
-                    }
+                }
 
-                    @Override
-                    public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
-                        if(discoveredEndpointInfo.getEndpointName().equals(confNumber.getText().toString())){
-                        return true;}else{return false;}
-                    }
+                @Override
+                public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
+                    if(discoveredEndpointInfo.getEndpointName().equals(confNumber.getText().toString())){
+                    return true;}else{return false;}
+                }
 
-                    @Override
-                    public void OnConnectionSuccess() {
+                @Override
+                public void OnConnectionSuccess() {
 
-                    }
+                }
 
-                    @Override
-                    public void OnConnectionFailure() {
-                        Toast.makeText(EntrantMain.this,"Connection did not work",Toast.LENGTH_LONG).show();
-                    }
+                @Override
+                public void OnConnectionFailure(Exception e) {
+                    Toast.makeText(EntrantMain.this,"Connection did not work",Toast.LENGTH_LONG).show();
+                }
 
-                    @Override
-                    public void OnConnectionLost() {
+                @Override
+                public void OnConnectionLost() {
 
-                    }
-                });
+                }
+            });
 
 
-            }
         });
 
         toUserData = findViewById(R.id.button2);
-        toUserData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(EntrantMain.this, UserData.class));
-            }
-        });
+        toUserData.setOnClickListener(view -> startActivity(new Intent(EntrantMain.this, UserData.class)));
 
 
         user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
 
-        tx = findViewById(R.id.WelcomeText);
+
         tx.setText("Welcome " + user);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
 
     }

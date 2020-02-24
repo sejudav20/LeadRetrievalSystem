@@ -1,25 +1,17 @@
 package com.example.conferencepro;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Entrant Data", foreignKeys = @ForeignKey(entity = CandidateData.class, parentColumns = "id",childColumns = "userKey", onDelete = ForeignKey.CASCADE))
-
+@Entity(tableName = "Entrant Data",foreignKeys = @ForeignKey(entity = ApplicantInfo.class,parentColumns = "userId",childColumns = "userData",onDelete = ForeignKey.CASCADE),indices = {@Index("userData")})
 public class EntrantData {
-@PrimaryKey(autoGenerate = true)
+   @PrimaryKey(autoGenerate = true)
     private int id;
-    private int name;
-    private int userKey;
-
-    public EntrantData(int name, int userKey, int timeStayed, boolean askedQuestions) {
-        this.name = name;
-        this.userKey = userKey;
-        this.timeStayed = timeStayed;
-        this.askedQuestions = askedQuestions;
-    }
-
-    private int timeStayed;
+    @ColumnInfo()
+    private String name;
 
     public int getId() {
         return id;
@@ -29,39 +21,50 @@ public class EntrantData {
         this.id = id;
     }
 
-    public int getName() {
-        return name;
-    }
-
-    public void setName(int name) {
+    public EntrantData(String name, int userData, int timesVisited, int timeStayed) {
         this.name = name;
-    }
-
-    public int getUserKey() {
-        return userKey;
-    }
-
-    public void setUserKey(int userKey) {
-        this.userKey = userKey;
-    }
-
-    public int getTimeStayed() {
-        return timeStayed;
-    }
-
-    public void setTimeStayed(int timeStayed) {
+        this.userData = userData;
+        this.timesVisited = timesVisited;
         this.timeStayed = timeStayed;
     }
 
-    public boolean isAskedQuestions() {
-        return askedQuestions;
+    public String getName() {
+        return name;
     }
 
-    public void setAskedQuestions(boolean askedQuestions) {
-        this.askedQuestions = askedQuestions;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    private boolean askedQuestions;
+    public int getUserData() {
+        return userData;
+    }
 
+    public void setUserData(int userData) {
+        this.userData = userData;
+    }
 
+    public int getTimesVisited() {
+        return timesVisited;
+    }
+
+    public void setTimesVisited(int timesVisited) {
+        this.timesVisited = timesVisited;
+    }
+
+    public long getTimeStayed() {
+        return timeStayed;
+    }
+
+    public void setTimeStayed(long timeStayed) {
+        this.timeStayed = timeStayed;
+    }
+
+    @ColumnInfo()
+    private int userData;
+
+    @ColumnInfo()
+    private int timesVisited;
+   @ColumnInfo()
+    private long timeStayed;
 }

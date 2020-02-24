@@ -81,7 +81,7 @@
                 android:text="Company/School(current or last)" />
 
             <EditText
-                android:id="@+id/company"
+                android:id="@+id/Company"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -128,7 +128,7 @@
                 android:text="Email" />
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/TimesVisited"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -156,8 +156,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
+                android:hint="eg, student"
+                android:inputType="textPersonName" />
 
         </LinearLayout>
 
@@ -201,8 +201,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
+                android:hint="eg. https://www.linkedin.com/in/williamhgates?trk=public_profile_browsemap_profile-result-card_result-card_full-click"
+                android:inputType="textPersonName" />
 
         </LinearLayout>
 
