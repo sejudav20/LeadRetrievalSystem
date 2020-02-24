@@ -1,5 +1,7 @@
 package com.example.conferencepro;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHolder> {
     HashMap<String,Boolean> data;
     ArrayList<String> keys;
+    SharedPreferences sp;
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,13 +38,15 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
               @Override
               public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                   data.put(keys.get(position),b);
+                  sp.edit().putBoolean(keys.get(position),b).apply();
               }
           });
     }
-    public CompanyAdapter(HashMap<String,Boolean> data){
+    public CompanyAdapter(HashMap<String,Boolean> data, Activity context){
 
         this.data=data;
         keys= new ArrayList<>(data.keySet());
+        sp=context.getSharedPreferences("ConferenceData",0);
     }
 
     @Override

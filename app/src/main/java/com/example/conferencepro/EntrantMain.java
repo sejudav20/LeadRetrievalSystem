@@ -15,9 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -31,6 +33,8 @@ public class EntrantMain extends AppCompatActivity {
     TextView txe;
     TextView tx23;
     public static String user;
+    NearbyCreator nc;
+    ToggleButton discoTog;
 
     public static String getUser() {
         return user;
@@ -50,6 +54,9 @@ public class EntrantMain extends AppCompatActivity {
         tx23.setVisibility(View.INVISIBLE);
         confNumber=findViewById(R.id.confNumber);
         tx = findViewById(R.id.welcomeText);
+        discoTog=findViewById(R.id.toggleButton);
+
+
         if (sp.getString(user+" cName","").equals("")) {
 
             b.setVisibility(View.VISIBLE);
@@ -63,7 +70,7 @@ public class EntrantMain extends AppCompatActivity {
 
         b.setOnClickListener(view -> {
 
-            NearbyCreator nc= new NearbyCreator(EntrantMain.this,"Usr", Strategy.P2P_CLUSTER);
+        nc= new NearbyCreator(EntrantMain.this,"Usr", Strategy.P2P_CLUSTER);
             nc.startDiscovery(confNumber.getText().toString()+" "+new Random().nextInt(10000000),new NearbyCreator.OptionsOfDiscovery(){
                 @Override
                 public void OnDiscoverySuccess() {
@@ -149,13 +156,88 @@ public class EntrantMain extends AppCompatActivity {
 
         tx.setText("Welcome " + user);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+        discoTog.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    if(sp.getString(user+" cName",null)!=null){
+
+                    }else{
+                        Toast.makeText(EntrantMain.this,"Please Add Conferance First",Toast.LENGTH_LONG).show();
+                        discoTog.setChecked(false);
+                    }
+                }else{
+                    nc.stopAllConnections();
+                    nc.stopDiscovery();
+                }
+            }
+        });
+
 
 
     }
+        NearbyCreator.OptionsOfDiscovery optionsOfDiscovery= new NearbyCreator.OptionsOfDiscovery() {
+            @Override
+            public void OnDiscoverySuccess() {
+                Toast.makeText(EntrantMain.this,"You are ready to explore this conference",Toast.LENGTH_LONG).show();
+            }
 
+            @Override
+            public void OnDiscoveryFailure(Exception e) {
+                Toast.makeText(EntrantMain.this,"Discovery Failed",Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void OnStringReceived(String user, String s) {
+
+            }
+
+            @Override
+            public void OnStringUpdate() {
+
+            }
+
+            @Override
+            public void OnConnectionGood(String s) {
+
+            }
+
+            @Override
+            public void OnConnectionError() {
+
+            }
+
+            @Override
+            public void OnConnectionRejected() {
+
+            }
+
+            @Override
+            public void OnConnectionDisconnected() {
+
+            }
+
+            @Override
+            public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
+                if(discoveredEndpointInfo.getEndpointName()){}
+                return false;
+            }
+
+            @Override
+            public void OnConnectionSuccess() {
+
+            }
+
+            @Override
+            public void OnConnectionFailure(Exception e) {
+
+            }
+
+            @Override
+            public void OnConnectionLost() {
+
+            }
+        }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

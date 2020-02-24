@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +21,23 @@ public class ConferenceUserData extends AppCompatActivity {
     HashMap<String, Boolean> companies;
     RecyclerView recyclerView;
     Button b;
+
+    public HashMap<String, Boolean> getCompanies() {
+        return companies;
+    }
+
+    public void setCompanies(HashMap<String, Boolean> companies) {
+        this.companies = companies;
+    }
+
+
     RecyclerView.LayoutManager lm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conference_user_data);
-        companies=new HashMap<>();
+        if(companies==null){
+        companies=new HashMap<>();}
         Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString("CData",""));
         sc.useDelimiter(",");
         String s=sc.next();
@@ -33,6 +45,7 @@ public class ConferenceUserData extends AppCompatActivity {
             companies.put(sc.next(),false);
 
         }
+
         recyclerView= findViewById(R.id.rview);
 
         lm= new LinearLayoutManager(this);
