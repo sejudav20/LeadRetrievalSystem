@@ -39,7 +39,9 @@ public class CoordinatorMain extends AppCompatActivity implements RoleTransferDi
     TextView companyView;
     String companyString="";
     String conferenceString;
+    Button advertiseConference;
     String user;
+    int entrantNum=0;
     LinearLayout ll;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +61,13 @@ companies= new HashSet<>();
         companies=sp.getStringSet("companies",new HashSet<String>());
         user= MainActivity.user;
         ll=findViewById(R.id.linearLayout2);
-
+        advertiseConference=findViewById(R.id.button3);
         companyView.setText("Companies added: ");
         editConferenceName=findViewById(R.id.addConferenceName);
         conference=sp.getString(user+ " cName","");
         conferenceNumber=sp.getInt(user+" cNum",0);
-        conferenceString= conferenceNumber+","+conference+","+companyString+",";
+        entrantNum=sp.getInt(user+" eNum",0);
+        conferenceString= conference+","+companyString+",";
         sp.edit().putString(user+" CData", conferenceString).apply();
         updateCompanies();
         addComp.setOnClickListener(new View.OnClickListener() {
@@ -80,11 +83,14 @@ companies= new HashSet<>();
                 }
             }
         });
+
+
         if(conferenceNumber==0){
             createConference.setVisibility(View.VISIBLE);
             editConferenceName.setVisibility(View.VISIBLE);
             ll.setVisibility(View.INVISIBLE);
             confNumbers.setText("");
+            advertiseConference.setVisibility(View.INVISIBLE);
             createConference.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -96,12 +102,14 @@ companies= new HashSet<>();
                         sp.edit().putString(user+" cName",editConferenceName.getText().toString()).apply();
                        conference=sp.getString(user+" cName","");
                         sp.edit().putInt(user+" cNum",new Random().nextInt(200000)+1).apply();
+                        sp.edit().putInt(user+" eNum",0).apply();
                         confNumbers.setText(sp.getInt(user+" cNum",0)+"");
                         addComp.setVisibility(View.VISIBLE);
                         addCompName.setVisibility(View.VISIBLE);
                         createConference.setVisibility(View.INVISIBLE);
                         editConferenceName.setVisibility(View.INVISIBLE);
                         ll.setVisibility(View.VISIBLE);
+                        advertiseConference.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -109,17 +117,73 @@ companies= new HashSet<>();
 
         }else{confNumbers.setText("Conference ID: "+conferenceNumber);
             createConference.setVisibility(View.INVISIBLE);
-            editConferenceName.setVisibility(View.INVISIBLE);}
+            editConferenceName.setVisibility(View.INVISIBLE);
+        }
         addComp.setVisibility(View.VISIBLE);
         addCompName.setVisibility(View.VISIBLE);
-
+        advertiseConference.setVisibility(View.VISIBLE);
         name=conference;
-        nc= new NearbyCreator(this,name, Strategy.P2P_CLUSTER);
+        nc= new NearbyCreator(this,"ConferencePro", Strategy.P2P_CLUSTER);
 
 
+        advertiseConference.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               if(advertiseConference.getText().toString().equals("Discover Conferences")){
+                if(conferenceNumber!=0){
+                    String s= conference;
+                    nc.startAdvertising(conferenceNumber+"",optionsToAdvertiseToUser);
+                }}else{
+                   nc.stopDiscovery();
 
+               }
+            }
+        });
     }
 
+    NearbyCreator.OptionsOfAdvertising optionsToAdvertiseToUser= new NearbyCreator.OptionsOfAdvertising() {
+        @Override
+        public void OnDiscoverySuccess() {
+         Toast.makeText(CoordinatorMain.this,"Advertising started succesfully",Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void OnDiscoveryFailure(Exception e) {
+            Toast.makeText(CoordinatorMain.this,"Advertising failed Check Permissions",Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void OnStringReceived(String user, String s) {
+
+        }
+
+        @Override
+        public void OnStringUpdate() {
+
+        }
+
+        @Override
+        public void OnConnectionGood(String s) {
+            nc.sendMessage(s,conferenceString);
+            nc.stopConnection(s);
+            entrantNum-=-1;
+        }
+
+        @Override
+        public void OnConnectionError() {
+
+        }
+
+        @Override
+        public void OnConnectionRejected() {
+
+        }
+
+        @Override
+        public void OnConnectionDisconnected() {
+
+        }
+    };
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -323,6 +387,7 @@ public void updateCompanies(){
         companyString+=s+"\n";
     }
     companyView.setText("Companies Added:"+companyString);
+    conferenceString= conference+","+companyString+",";
 }
 
 

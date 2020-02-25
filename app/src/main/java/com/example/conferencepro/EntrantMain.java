@@ -138,7 +138,9 @@ public class EntrantMain extends AppCompatActivity {
                 @Override
                 public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
                     if(discoveredEndpointInfo.getEndpointName().equals(confNumber.getText().toString())){
-                    return true;}else{return false;}
+                    return true;}else{
+                        Toast.makeText(EntrantMain.this,"Check the Conference id number you inputted",Toast.LENGTH_LONG).show();
+                        return false;}
                 }
 
                 @Override
