@@ -174,7 +174,9 @@ public class JobMain extends AppCompatActivity {
 
                 if(ede.size()==0){
                 Scanner sc= new Scanner(s);
-                if(sc.next().equals(conferenceID)) {
+
+                String em=sc.next();
+                if(em==null||em.equals(conferenceID)) {
                     addPerson(s1);
                     String name = sc.next();
                     String email = sc.next();
