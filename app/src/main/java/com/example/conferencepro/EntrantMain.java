@@ -21,8 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 public class EntrantMain extends AppCompatActivity {
     TextView tx;
@@ -36,7 +38,8 @@ public class EntrantMain extends AppCompatActivity {
     NearbyCreator nc;
     ToggleButton discoTog;
     SharedPreferences sp;
-
+    SharedPreferences spi;
+    Set<String> companies;
     public static String getUser() {
         return user;
     }
@@ -45,7 +48,7 @@ public class EntrantMain extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_main);
-
+        spi=getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
         sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
         b = findViewById(R.id.AddConference);
         txe=findViewById(R.id.textView3);
@@ -69,6 +72,8 @@ public class EntrantMain extends AppCompatActivity {
         }else{
             txe.setText("Current Conference is:"+sp.getString(user+" cName",""));
             nc= new NearbyCreator(EntrantMain.this,"ConferencePro "+sp.getString(user+" cName",""), Strategy.P2P_CLUSTER);
+            updateCompanies(sp.getString(user+" CData",null));
+
         }
         confNumber= findViewById(R.id.confNumber);
 
@@ -95,6 +100,7 @@ public class EntrantMain extends AppCompatActivity {
                     SharedPreferences sp1 = getSharedPreferences("ConferenceData",MODE_PRIVATE);
                     sp1.edit().putString(user+" CData",s).apply();
                     sp1.edit().putString(user+" cName",confname).apply();
+                    updateCompanies(sp1.getString(user+" CData",null));
                     b.setVisibility(View.INVISIBLE);
                     confNumber.setVisibility(View.INVISIBLE);
                     txe.setText("Current Conference is:"+ sp1.getString(user+" cName",""));
@@ -188,6 +194,23 @@ public class EntrantMain extends AppCompatActivity {
 
 
     }
+
+    public void updateCompanies(String data){
+        if(data==null){
+            return;
+        }
+        companies.clear();
+
+        Scanner sc=new Scanner(data);
+        sc.useDelimiter(",");
+
+        String s=sc.next();
+
+
+        while(sc.hasNext()){
+            companies.add(sc.next());
+        }
+    }
         NearbyCreator.OptionsOfDiscovery optionsOfDiscovery= new NearbyCreator.OptionsOfDiscovery() {
             @Override
             public void OnDiscoverySuccess() {
@@ -211,7 +234,7 @@ public class EntrantMain extends AppCompatActivity {
             @Override
             public void OnConnectionGood(String s) {
                 Toast.makeText(EntrantMain.this,"Transferring data",Toast.LENGTH_SHORT).show();
-                nc.sendMessage(s,getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
+                nc.sendMessage(s,sp.getString(user+" cName",null)+","+getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
             }
 
             @Override
@@ -231,7 +254,15 @@ public class EntrantMain extends AppCompatActivity {
 
             @Override
             public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
-                if( sp.getString(discoveredEndpointInfo.getEndpointName(),"").equals("")||sp.getString(discoveredEndpointInfo.getEndpointName(),"").equals("false")){
+                if(!sp.contains(discoveredEndpointInfo.getEndpointName() )){
+                    if(companies.contains(discoveredEndpointInfo.getEndpointName()
+                    )){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+                if(!sp.getBoolean(discoveredEndpointInfo.getEndpointName(),false)){
 
                     return false;
                 }

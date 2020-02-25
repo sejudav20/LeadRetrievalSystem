@@ -43,8 +43,9 @@ public class JobMain extends AppCompatActivity {
     Button submitForm;
     SharedPreferences sp;
     SharedPreferences.Editor spe;
-    String conferenceID;
-    String jobName;
+    String conferenceName;
+
+    static String jobName;
     boolean advertising=false;
     TextView viewPeople;
     ApplicantRepository repository;
@@ -56,13 +57,13 @@ public class JobMain extends AppCompatActivity {
 
         sp = getSharedPreferences("jobData", MODE_PRIVATE);
         spe = sp.edit();
-        conferenceID = sp.getString("ID", "");
+        conferenceName = sp.getString("cName", "");
         jobName = sp.getString("JobName", "");
         afterConf = findViewById(R.id.AfterConferenceAdded);
         beforeConf = findViewById(R.id.AddConferenceForm);
         welcome = findViewById(R.id.welcomeText);
         viewPeople= findViewById(R.id.connectionRecords);
-        if (conferenceID.equals("")) {
+        if (conferenceName.equals("")) {
             beforeConf.setVisibility(View.VISIBLE);
             afterConf.setVisibility(View.INVISIBLE);
             welcome.setText("Fill Out Form Below");
@@ -86,7 +87,7 @@ public class JobMain extends AppCompatActivity {
                         enterConference.getText().toString().contains(",") || enterCompany.getText().toString().contains(",")) {
                     enterConference.setError("Empty Field or Comma is included");
                 } else {
-                    spe.putString("ID", enterConference.getText().toString()).apply();
+                    spe.putString("cName", enterConference.getText().toString()).apply();
                     spe.putString("JobName", enterCompany.getText().toString()).apply();
                     recreate();
                 }
@@ -95,7 +96,7 @@ public class JobMain extends AppCompatActivity {
         viewData=findViewById(R.id.viewwDataButtonTo);
         advertise=findViewById(R.id.AdvertiseButtion);
         if(afterConf.getVisibility()==View.VISIBLE) {
-            nc = new NearbyCreator(this, jobName, Strategy.P2P_CLUSTER);
+            nc = new NearbyCreator(this, "ConferencePro "+conferenceName, Strategy.P2P_CLUSTER);
         }
 
         viewData.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +177,7 @@ public class JobMain extends AppCompatActivity {
                 Scanner sc= new Scanner(s);
 
                 String em=sc.next();
-                if(em==null||em.equals(conferenceID)) {
+                if(em!=null&&em.equals(conferenceName)) {
                     addPerson(s1);
                     String name = sc.next();
                     String email = sc.next();

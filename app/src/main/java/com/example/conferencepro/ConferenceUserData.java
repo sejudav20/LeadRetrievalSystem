@@ -42,7 +42,7 @@ public class ConferenceUserData extends AppCompatActivity {
         sc.useDelimiter(",");
         String s=sc.next();
         while(sc.hasNext()){
-            companies.put(sc.next(),false);
+            companies.put(sc.next(),true);
 
         }
 
@@ -57,7 +57,7 @@ public class ConferenceUserData extends AppCompatActivity {
                 startActivity(new Intent(ConferenceUserData.this,EntrantMain.class));
             }
         });
-        recyclerView.setAdapter(new CompanyAdapter(companies));
+        recyclerView.setAdapter(new CompanyAdapter(companies,this));
 
     }
 }

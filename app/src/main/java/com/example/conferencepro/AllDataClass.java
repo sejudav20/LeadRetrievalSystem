@@ -4,9 +4,17 @@ import androidx.room.Embedded;
 
 public class AllDataClass {
     @Embedded
-    EntrantData ed;
+    private EntrantData ed;
     @Embedded
-    ApplicantInfo ai;
+    private ApplicantInfo ai;
+
+    public ApplicantInfo getAi() {
+        return ai;
+    }
+
+    public void setAi(ApplicantInfo ai) {
+        this.ai = ai;
+    }
 
     public EntrantData getEd() {
         return ed;

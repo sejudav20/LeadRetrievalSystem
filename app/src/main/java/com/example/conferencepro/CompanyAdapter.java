@@ -15,10 +15,12 @@ import java.util.HashMap;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHolder> {
     HashMap<String,Boolean> data;
     ArrayList<String> keys;
-    SharedPreferences sp;
+    SharedPreferences spi;
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,12 +35,16 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
           holder.tv.setText(keys.get(position));
+          if(!spi.contains(keys.get(position))){
+              spi.edit().putBoolean(keys.get(position),true).apply();
+
+          }
           holder.b.setChecked(data.get(keys.get(position)));
           holder.b.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
               @Override
               public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                   data.put(keys.get(position),b);
-                  sp.edit().putBoolean(keys.get(position),b).apply();
+                  spi.edit().putBoolean(keys.get(position),b).apply();
               }
           });
     }
@@ -46,7 +52,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
 
         this.data=data;
         keys= new ArrayList<>(data.keySet());
-        sp=context.getSharedPreferences("ConferenceData",0);
+        spi=context.getSharedPreferences(EntrantMain.user+" conferenceJobs",MODE_PRIVATE);
     }
 
     @Override
