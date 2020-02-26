@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -79,6 +80,10 @@ companies= new HashSet<>();
         conferenceString= conference+","+companyString+",";
         sp.edit().putString(user+" CData", conferenceString).apply();
         updateCompanies();
+        if(sp.getStringSet("companies",null)!=null){
+            companies=sp.getStringSet("companies",null);
+            updateCompanies();
+        }
 
         entrantNumLive.observe(this, new Observer<Integer>() {
             @Override
@@ -116,7 +121,7 @@ companies= new HashSet<>();
 
                     }else{
                         sp.edit().putString(user+" cName",editConferenceName.getText().toString()).apply();
-                       conference=sp.getString(user+" cName","");
+                       conference=sp.getString(user+" cName",editConferenceName.getText().toString());
                         sp.edit().putInt(user+" cNum",new Random().nextInt(200000)+1).apply();
                         sp.edit().putInt(user+" eNum",0).apply();
                         confNumbers.setText(sp.getInt(user+" cNum",0)+"");
@@ -145,12 +150,14 @@ companies= new HashSet<>();
         advertiseConference.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               if(advertiseConference.getText().toString().equals("Discover Conferences")){
+               if(advertiseConference.getText().toString().toLowerCase().equals("advertise conference")){
                 if(conferenceNumber!=0){
                     String s= conference;
                     nc.startAdvertising(conferenceNumber+"",optionsToAdvertiseToUser);
+                    advertiseConference.setText("Stop Advertising...");
                 }}else{
-                   nc.stopDiscovery();
+                   nc.stopAdvertising();
+                   advertiseConference.setText("Advertise Conference");
 
                }
             }
@@ -165,7 +172,7 @@ companies= new HashSet<>();
 
         @Override
         public void OnDiscoveryFailure(Exception e) {
-            Toast.makeText(CoordinatorMain.this,"Advertising failed Check Permissions",Toast.LENGTH_SHORT).show();
+            Toast.makeText(CoordinatorMain.this,"Advertising failed Check Permissions or already advertising",Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -180,26 +187,37 @@ companies= new HashSet<>();
 
         @Override
         public void OnConnectionGood(String s) {
+            Toast.makeText(CoordinatorMain.this,"Sent Conference data",Toast.LENGTH_SHORT).show();
+
             nc.sendMessage(s,conferenceString);
-            nc.stopConnection(s);
             entrantNum-=-1;
         }
 
         @Override
         public void OnConnectionError() {
+            Toast.makeText(CoordinatorMain.this,"Connection Error",Toast.LENGTH_SHORT).show();
 
         }
 
         @Override
         public void OnConnectionRejected() {
+            Toast.makeText(CoordinatorMain.this,"Connection rejected",Toast.LENGTH_SHORT).show();
 
         }
 
         @Override
         public void OnConnectionDisconnected() {
+            Toast.makeText(CoordinatorMain.this,"Disconnected",Toast.LENGTH_SHORT).show();
 
         }
     };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sp.edit().putStringSet("companies",companies).apply();
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -232,6 +250,7 @@ companies= new HashSet<>();
     protected void onStop() {
         super.onStop();
         sp.edit().putInt(user+" eName",entrantNum).apply();
+        sp.edit().putStringSet("companies",companies).apply();
     }
 
     @Override
@@ -240,7 +259,7 @@ companies= new HashSet<>();
             nc.startDiscovery("Conference receiver" ,optionsOfDiscovery);
 
         }else{
-            nc.startAdvertising("",optionsOfAdvertising);
+            nc.startAdvertising("master",optionsOfAdvertising);
 
         }
     }
@@ -405,11 +424,14 @@ companies= new HashSet<>();
     };
 
 public void updateCompanies(){
+    companyString="";
+    conference=sp.getString(user+" cName","");
     for(String s:companies){
-        companyString+=s+"\n";
+        companyString+=s+",";
     }
-    companyView.setText("Companies Added:"+companyString);
+    companyView.setText("Companies Added: "+companyString);
     conferenceString= conference+","+companyString+",";
+    Log.d("testing","Conference String "+conferenceString);
 }
 
 

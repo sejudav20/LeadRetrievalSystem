@@ -189,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
             if (loginSuccessful(email, password)) {
                 ed.putString("username", email).apply();
                 ed.putString(email+" role","").apply();
-
+                ed.apply();
                 startActivity(new Intent(this, MainActivity.class));
 
 

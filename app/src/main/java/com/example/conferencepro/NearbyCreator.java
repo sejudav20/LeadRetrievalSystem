@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.widget.Toast;
 
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
@@ -164,11 +165,15 @@ public class NearbyCreator {
     final ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
       @Override
       public void onConnectionInitiated(@NonNull String s, @NonNull ConnectionInfo connectionInfo) {
+        Toast.makeText(context,"Accepting connection",Toast.LENGTH_SHORT).show();
+
         Nearby.getConnectionsClient(context).acceptConnection(s, payloadCallback);
       }
 
       @Override
       public void onConnectionResult(@NonNull String s, @NonNull ConnectionResolution result) {
+        Toast.makeText(context,"Authenticating",Toast.LENGTH_SHORT).show();
+
         switch (result.getStatus().getStatusCode()) {
           case ConnectionsStatusCodes.STATUS_OK:
             // We're connected! Can now start sending and receiving data.
@@ -295,8 +300,8 @@ public class NearbyCreator {
       @Override
       public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
         String es = new String(payload.asBytes());
-        if(connections.contains(s)){
-          stringOptions.OnStringReceived(s, es);}
+
+          stringOptions.OnStringReceived(s, es);
       }
 
       @Override

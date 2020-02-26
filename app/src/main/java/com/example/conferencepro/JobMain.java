@@ -173,9 +173,9 @@ public class JobMain extends AppCompatActivity {
             try {
             List<EntrantData> ede=repository.getSpecificEntrantData(s1).getValue();
 
-                if(ede.size()==0){
+                if(ede!=null&&ede.size()==0){
                 Scanner sc= new Scanner(s);
-
+                sc.useDelimiter("&/;-;/&");
                 String em=sc.next();
                 if(em!=null&&em.equals(conferenceName)) {
                     addPerson(s1);

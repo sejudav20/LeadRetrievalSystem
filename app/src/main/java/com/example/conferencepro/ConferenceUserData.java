@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,7 +22,7 @@ public class ConferenceUserData extends AppCompatActivity {
     HashMap<String, Boolean> companies;
     RecyclerView recyclerView;
     Button b;
-
+    String user;
     public HashMap<String, Boolean> getCompanies() {
         return companies;
     }
@@ -38,8 +39,10 @@ public class ConferenceUserData extends AppCompatActivity {
         setContentView(R.layout.activity_conference_user_data);
         if(companies==null){
         companies=new HashMap<>();}
-        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString("CData",""));
-        sc.useDelimiter(",");
+        user=getIntent().getStringExtra("user");
+        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
+       Log.d("testing",getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
+        sc.useDelimiter(UserData.DELIMETER);
         String s=sc.next();
         while(sc.hasNext()){
             companies.put(sc.next(),true);
@@ -57,7 +60,7 @@ public class ConferenceUserData extends AppCompatActivity {
                 startActivity(new Intent(ConferenceUserData.this,EntrantMain.class));
             }
         });
-        recyclerView.setAdapter(new CompanyAdapter(companies,this));
-
+        Log.d("testing",companies.toString());
+        recyclerView.setAdapter(new CompanyAdapter(companies,this,user));
     }
 }

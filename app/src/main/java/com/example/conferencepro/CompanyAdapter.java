@@ -48,11 +48,11 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
               }
           });
     }
-    public CompanyAdapter(HashMap<String,Boolean> data, Activity context){
+    public CompanyAdapter(HashMap<String,Boolean> data, Activity context,String user){
 
         this.data=data;
         keys= new ArrayList<>(data.keySet());
-        spi=context.getSharedPreferences(EntrantMain.user+" conferenceJobs",MODE_PRIVATE);
+        spi=context.getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,14 +27,14 @@ public class UserData extends AppCompatActivity {
     Spinner educationLevel;
     EditText number;
     EditText company;
-    public static  String DELIMETER="&/*-*/&";
+    public static  String DELIMETER="&/;-;/&";
     EditText currentRole;
-
+    String user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_data);
-
+         user=getSharedPreferences("user",0).getString("username","");
         saveB=findViewById(R.id.save);
         toConferenceSettingsB=findViewById(R.id.toConferenceButton);
         email=findViewById(R.id.TimesVisited);
@@ -55,35 +56,42 @@ public class UserData extends AppCompatActivity {
         edu.add("None Of the Above");
         educationLevel.setAdapter(new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,edu));
         toConferenceSettingsB.setOnClickListener(view -> {
-                if(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString("CData","").equals("")){
+                if(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData","").equals("")){
                     Toast.makeText(UserData.this,"Please add a Conference First",Toast.LENGTH_SHORT).show();
                 }else{
-                startActivity(new Intent(UserData.this, ConferenceUserData.class));}
+
+                    Intent i=new Intent(UserData.this, ConferenceUserData.class);
+                    i.putExtra("user",user);
+                startActivity(i);}
             });
         saveB.setOnClickListener(view -> {
-            SharedPreferences sp= getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE);
+            Log.d("testing","user "+user);
+            SharedPreferences sp= getSharedPreferences(user,MODE_PRIVATE);
             sp.edit().putString("userData",""+DELIMETER+name.getText()+" "+DELIMETER+email.getText()+" "+DELIMETER+number.getText()+" "+DELIMETER+company.getText()
                     +" "+DELIMETER+currentRole.getText()+" "+DELIMETER+educationLevel.getSelectedItem().toString()+DELIMETER+LinkedUrl.getText()+" ").apply();
             Toast.makeText(UserData.this,"Saved",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(UserData.this,EntrantMain.class));
         });
 
-        SharedPreferences sp= getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE);
+        SharedPreferences sp= getSharedPreferences(user,MODE_PRIVATE);
         if(!sp.getString("userData","").equals("")) {
             Scanner sc = new Scanner(sp.getString("userData", ""));
+            Log.d("testing",sp.getString("userData",""));
+            sc.useDelimiter(DELIMETER);
             String s=sc.next();
-            name.setText(s.substring(0,s.length()-2));
+            Log.d("testing","Name "+s);
+            name.setText(s.substring(0,s.length()-1));
             s=sc.next();
-            email.setText(s.substring(0,s.length()-2));
+            email.setText(s.substring(0,s.length()-1));
             s=sc.next();
-            number.setText(s.substring(0,s.length()-2));
+            number.setText(s.substring(0,s.length()-1));
             s=sc.next();
-           company.setText(s.substring(0,s.length()-2));
+           company.setText(s.substring(0,s.length()-1));
            s=sc.next();
-           currentRole.setText(s.substring(0,s.length()-2));
+           currentRole.setText(s.substring(0,s.length()-1));
            s=sc.next();
            s=sc.next();
-           LinkedUrl.setText(s.substring(0,s.length()-2));
+           LinkedUrl.setText(s.substring(0,s.length()-1));
 
         }
 

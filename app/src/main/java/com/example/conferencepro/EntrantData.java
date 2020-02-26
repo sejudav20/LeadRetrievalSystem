@@ -21,7 +21,7 @@ public class EntrantData {
         this.id = id;
     }
 
-    public EntrantData(String name, int userData, int timesVisited, int timeStayed) {
+    public EntrantData(String name, int userData, int timesVisited, long timeStayed) {
         this.name = name;
         this.userData = userData;
         this.timesVisited = timesVisited;

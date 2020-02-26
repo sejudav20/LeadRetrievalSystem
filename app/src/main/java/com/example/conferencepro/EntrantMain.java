@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -48,6 +50,7 @@ public class EntrantMain extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_main);
+        NearbyCreator.getPermissionToUseNearby(this);
         spi=getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
         sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
         b = findViewById(R.id.AddConference);
@@ -59,8 +62,10 @@ public class EntrantMain extends AppCompatActivity {
         confNumber=findViewById(R.id.confNumber);
         tx = findViewById(R.id.welcomeText);
         discoTog=findViewById(R.id.toggleButton);
-
-
+        user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
+        if(companies==null){
+            companies=new HashSet<>();
+        }
         if (sp.getString(user+" cName","").equals("")) {
 
             b.setVisibility(View.VISIBLE);
@@ -73,6 +78,7 @@ public class EntrantMain extends AppCompatActivity {
             txe.setText("Current Conference is:"+sp.getString(user+" cName",""));
             nc= new NearbyCreator(EntrantMain.this,"ConferencePro "+sp.getString(user+" cName",""), Strategy.P2P_CLUSTER);
             updateCompanies(sp.getString(user+" CData",null));
+            Log.d("testing","companies"+companies.toString());
 
         }
         confNumber= findViewById(R.id.confNumber);
@@ -80,10 +86,13 @@ public class EntrantMain extends AppCompatActivity {
         b.setOnClickListener(view -> {
 
             nc= new NearbyCreator(EntrantMain.this,"ConferencePro", Strategy.P2P_CLUSTER);
-            nc.startDiscovery(confNumber.getText().toString()+" "+new Random().nextInt(10000000),new NearbyCreator.OptionsOfDiscovery(){
+            if(b.getText().toString().toLowerCase().equals("enter conference")){
+                b.setText("Stop Discovery");
+            nc.startDiscovery("ConferencePro",new NearbyCreator.OptionsOfDiscovery(){
                 @Override
                 public void OnDiscoverySuccess() {
                     Toast.makeText(EntrantMain.this,"Discovery of conferences starting",Toast.LENGTH_SHORT).show();
+
                 }
 
                 @Override
@@ -93,21 +102,22 @@ public class EntrantMain extends AppCompatActivity {
 
                 @Override
                 public void OnStringReceived(String s,String user) {
-                Scanner sc=new Scanner(s);
+
+                    Scanner sc=new Scanner(s);
                 sc.useDelimiter(",");
                     String confname=sc.next();
                     Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
                     SharedPreferences sp1 = getSharedPreferences("ConferenceData",MODE_PRIVATE);
-                    sp1.edit().putString(user+" CData",s).apply();
-                    sp1.edit().putString(user+" cName",confname).apply();
-                    updateCompanies(sp1.getString(user+" CData",null));
+                    sp1.edit().putString(EntrantMain.getUser()+" CData",s).apply();
+                    sp1.edit().putString(EntrantMain.getUser()+" cName",confname).apply();
+                    updateCompanies(sp1.getString(EntrantMain.getUser()+" CData",null));
                     b.setVisibility(View.INVISIBLE);
                     confNumber.setVisibility(View.INVISIBLE);
-                    txe.setText("Current Conference is:"+ sp1.getString(user+" cName",""));
+                    txe.setText("Current Conference is:"+ sp1.getString(EntrantMain.getUser()+" cName",""));
                     tx23.setVisibility(View.INVISIBLE);
                     nc.stopAllConnections();
                     nc.stopDiscovery();
-                    nc= new NearbyCreator(EntrantMain.this,"ConferencePro "+sp.getString(user+" cName",""), Strategy.P2P_CLUSTER);
+                    nc= new NearbyCreator(EntrantMain.this,"ConferencePro "+sp.getString(EntrantMain.getUser()+" cName",""), Strategy.P2P_CLUSTER);
                 }
 
                 @Override
@@ -117,29 +127,39 @@ public class EntrantMain extends AppCompatActivity {
 
                 @Override
                 public void OnConnectionGood(String s) {
+                    Toast.makeText(EntrantMain.this,"Connection is good should receive info",Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void OnConnectionError() {
+                    Toast.makeText(EntrantMain.this,"Discovery of conferences error",Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void OnConnectionRejected() {
+                    Toast.makeText(EntrantMain.this,"Got rejected",Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void OnConnectionDisconnected() {
+                    Toast.makeText(EntrantMain.this,"Disconnected",Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
+
+                    Toast.makeText(EntrantMain.this,"Authenticating",Toast.LENGTH_SHORT).show();
+
                     if(discoveredEndpointInfo.getEndpointName().equals(confNumber.getText().toString())){
-                    return true;}else{
-                        Toast.makeText(EntrantMain.this,"Check the Conference id number you inputted",Toast.LENGTH_LONG).show();
+                        Toast.makeText(EntrantMain.this,"Successful auth",Toast.LENGTH_SHORT).show();
+
+                        return true;}else{
+                        Toast.makeText(EntrantMain.this,"Check the Conference id number you inputted and try again",Toast.LENGTH_LONG).show();
+
                         return false;}
                 }
 
@@ -157,7 +177,10 @@ public class EntrantMain extends AppCompatActivity {
                 public void OnConnectionLost() {
 
                 }
-            });
+            });}else{
+                nc.stopDiscovery();
+                b.setText("Enter Conference");
+            }
 
 
         });
@@ -166,7 +189,7 @@ public class EntrantMain extends AppCompatActivity {
         toUserData.setOnClickListener(view -> startActivity(new Intent(EntrantMain.this, UserData.class)));
 
 
-        user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
+
 
 
         tx.setText("Welcome " + user);
@@ -197,11 +220,12 @@ public class EntrantMain extends AppCompatActivity {
 
     }
 
+
     public void updateCompanies(String data){
         if(data==null){
             return;
         }
-        companies.clear();
+
 
         Scanner sc=new Scanner(data);
         sc.useDelimiter(",");
@@ -236,7 +260,7 @@ public class EntrantMain extends AppCompatActivity {
             @Override
             public void OnConnectionGood(String s) {
                 Toast.makeText(EntrantMain.this,"Transferring data",Toast.LENGTH_SHORT).show();
-                nc.sendMessage(s,sp.getString(user+" cName",null)+","+getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
+                nc.sendMessage(s,sp.getString(user+" cName",null)+"&/;-;/&"+getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
             }
 
             @Override
