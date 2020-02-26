@@ -19,17 +19,13 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 public class ConferenceUserData extends AppCompatActivity {
-    HashMap<String, Boolean> companies;
+    HashSet<String> companies;
     RecyclerView recyclerView;
     Button b;
     String user;
-    public HashMap<String, Boolean> getCompanies() {
-        return companies;
-    }
 
-    public void setCompanies(HashMap<String, Boolean> companies) {
-        this.companies = companies;
-    }
+    SharedPreferences spi;
+
 
 
     RecyclerView.LayoutManager lm;
@@ -38,16 +34,18 @@ public class ConferenceUserData extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conference_user_data);
         if(companies==null){
-        companies=new HashMap<>();}
+        companies=new HashSet<>();}
         user=getIntent().getStringExtra("user");
-        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
-       Log.d("testing",getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
-        sc.useDelimiter(UserData.DELIMETER);
-        String s=sc.next();
-        while(sc.hasNext()){
-            companies.put(sc.next(),true);
-
-        }
+        spi= getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
+        companies= (HashSet<String>) spi.getStringSet("all",new HashSet<>());
+//        Scanner sc= new Scanner(getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
+//       Log.d("testing",getSharedPreferences("ConferenceData",MODE_PRIVATE).getString(user+" CData",""));
+//        sc.useDelimiter(UserData.DELIMETER);
+//        String s=sc.next();
+//        while(sc.hasNext()){
+//            companies.put(sc.next());
+//
+//        }
 
         recyclerView= findViewById(R.id.rview);
 

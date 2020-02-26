@@ -42,6 +42,7 @@ public class EntrantMain extends AppCompatActivity {
     SharedPreferences sp;
     SharedPreferences spi;
     Set<String> companies;
+    String confname;
     public static String getUser() {
         return user;
     }
@@ -51,6 +52,7 @@ public class EntrantMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_main);
         NearbyCreator.getPermissionToUseNearby(this);
+        user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
         spi=getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
         sp= getSharedPreferences("ConferenceData",MODE_PRIVATE);
         b = findViewById(R.id.AddConference);
@@ -62,7 +64,9 @@ public class EntrantMain extends AppCompatActivity {
         confNumber=findViewById(R.id.confNumber);
         tx = findViewById(R.id.welcomeText);
         discoTog=findViewById(R.id.toggleButton);
-        user = getSharedPreferences("user", MODE_PRIVATE).getString("username", "guest");
+
+        conference=sp.getString(user+" cName","");
+        companies=spi.getStringSet("all",null);
         if(companies==null){
             companies=new HashSet<>();
         }
@@ -105,7 +109,8 @@ public class EntrantMain extends AppCompatActivity {
 
                     Scanner sc=new Scanner(s);
                 sc.useDelimiter(",");
-                    String confname=sc.next();
+                   confname=sc.next();
+                   conference=confname;
                     Toast.makeText(EntrantMain.this,"Connection successful to conference"+ confname,Toast.LENGTH_SHORT).show();
                     SharedPreferences sp1 = getSharedPreferences("ConferenceData",MODE_PRIVATE);
                     sp1.edit().putString(EntrantMain.getUser()+" CData",s).apply();
@@ -155,7 +160,6 @@ public class EntrantMain extends AppCompatActivity {
                     Toast.makeText(EntrantMain.this,"Authenticating",Toast.LENGTH_SHORT).show();
 
                     if(discoveredEndpointInfo.getEndpointName().equals(confNumber.getText().toString())){
-                        Toast.makeText(EntrantMain.this,"Successful auth",Toast.LENGTH_SHORT).show();
 
                         return true;}else{
                         Toast.makeText(EntrantMain.this,"Check the Conference id number you inputted and try again",Toast.LENGTH_LONG).show();
@@ -236,6 +240,7 @@ public class EntrantMain extends AppCompatActivity {
         while(sc.hasNext()){
             companies.add(sc.next());
         }
+        spi.edit().putStringSet("all",companies).apply();
     }
         NearbyCreator.OptionsOfDiscovery optionsOfDiscovery= new NearbyCreator.OptionsOfDiscovery() {
             @Override
@@ -281,7 +286,7 @@ public class EntrantMain extends AppCompatActivity {
             @Override
             public boolean Authenticated(@NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
                 if(!sp.contains(discoveredEndpointInfo.getEndpointName() )){
-                    if(companies.contains(discoveredEndpointInfo.getEndpointName()
+                    if(spi.getStringSet("sent",companies).contains(discoveredEndpointInfo.getEndpointName()
                     )){
                         return true;
                     }else{

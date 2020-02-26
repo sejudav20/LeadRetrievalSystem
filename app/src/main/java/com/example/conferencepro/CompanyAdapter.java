@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import static android.content.Context.MODE_PRIVATE;
 
 public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHolder> {
-    HashMap<String,Boolean> data;
+    Set<String> data;
     ArrayList<String> keys;
     SharedPreferences spi;
+    Set<String> sendable;
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,24 +38,27 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
           holder.tv.setText(keys.get(position));
-          if(!spi.contains(keys.get(position))){
-              spi.edit().putBoolean(keys.get(position),true).apply();
 
-          }
-          holder.b.setChecked(data.get(keys.get(position)));
+
+          holder.b.setChecked(sendable.contains(keys.get(position)));
           holder.b.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
               @Override
               public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                  data.put(keys.get(position),b);
+                  if(b){
+                      sendable.add(keys.get(position));
+                  }else{
+                      sendable.remove(keys.get(position));
+                  }
                   spi.edit().putBoolean(keys.get(position),b).apply();
               }
           });
     }
-    public CompanyAdapter(HashMap<String,Boolean> data, Activity context,String user){
+    public CompanyAdapter(Set<String> data, Activity context, String user){
 
         this.data=data;
-        keys= new ArrayList<>(data.keySet());
+        keys= new ArrayList<>(data);
         spi=context.getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
+        sendable=spi.getStringSet("sent",data);
     }
 
     @Override

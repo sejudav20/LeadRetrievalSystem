@@ -69,7 +69,7 @@ companies= new HashSet<>();
         welcome.setText("Welcome "+spe.getString("username",""));
         createConference=findViewById(R.id.createNewConference);
         companies=sp.getStringSet("companies",new HashSet<String>());
-        user= MainActivity.user;
+        user= getSharedPreferences("user",MODE_PRIVATE).getString("username","");
         ll=findViewById(R.id.linearLayout2);
         advertiseConference=findViewById(R.id.button3);
         companyView.setText("Companies added: ");
@@ -168,6 +168,7 @@ companies= new HashSet<>();
         @Override
         public void OnDiscoverySuccess() {
          Toast.makeText(CoordinatorMain.this,"Advertising started succesfully",Toast.LENGTH_SHORT).show();
+            Log.d("testing","Conference Name "+conference);
         }
 
         @Override
@@ -188,8 +189,8 @@ companies= new HashSet<>();
         @Override
         public void OnConnectionGood(String s) {
             Toast.makeText(CoordinatorMain.this,"Sent Conference data",Toast.LENGTH_SHORT).show();
-
-            nc.sendMessage(s,conferenceString);
+            Log.d("testing","Conference Name "+conference);
+            nc.sendMessage(s,conference+","+companyString);
             entrantNum-=-1;
         }
 
@@ -233,7 +234,8 @@ companies= new HashSet<>();
 
                 break;
             case R.id.ReceiveCoordinatorRole:
-                Toast.makeText(CoordinatorMain.this,"Please add a conference first", Toast.LENGTH_LONG).show();
+                if(conference.equals("")){
+                Toast.makeText(CoordinatorMain.this,"Please add a conference first", Toast.LENGTH_LONG).show();}
                 isReceiving=true;
                 break;
 
@@ -249,7 +251,7 @@ companies= new HashSet<>();
     @Override
     protected void onStop() {
         super.onStop();
-        sp.edit().putInt(user+" eName",entrantNum).apply();
+        sp.edit().putInt(user+" eNum",entrantNum).apply();
         sp.edit().putStringSet("companies",companies).apply();
     }
 
@@ -426,6 +428,9 @@ companies= new HashSet<>();
 public void updateCompanies(){
     companyString="";
     conference=sp.getString(user+" cName","");
+    if(conference==""){
+        Log.d("testing","conferenceName is not working");
+    }
     for(String s:companies){
         companyString+=s+",";
     }
