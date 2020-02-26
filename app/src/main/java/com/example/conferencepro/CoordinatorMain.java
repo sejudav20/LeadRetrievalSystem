@@ -2,6 +2,10 @@ package com.example.conferencepro;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,19 +45,24 @@ public class CoordinatorMain extends AppCompatActivity implements RoleTransferDi
     String conferenceString;
     Button advertiseConference;
     String user;
+    TextView entrantNumView;
     int entrantNum=0;
     LinearLayout ll;
+    MutableLiveData<Integer> entrantNumLive;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coordinator_main);
-
+        entrantNumView=findViewById(R.id.entrantNumber);
+        entrantNumView.setText("Number of Entrants: "+entrantNum);
         confNumbers= findViewById(R.id.conferenceViewText);
 companies= new HashSet<>();
         addComp=findViewById(R.id.addCompany);
         addCompName=findViewById(R.id.editAddCompany);
         companyView=findViewById(R.id.companyView);
         welcome=findViewById(R.id.WelcomeTextC);
+        entrantNumLive= new MutableLiveData<>();
+        entrantNumLive.setValue(entrantNum);
         sp=getSharedPreferences("CoordData",MODE_PRIVATE);
         SharedPreferences spe=getSharedPreferences("user",MODE_PRIVATE);
         welcome.setText("Welcome "+spe.getString("username",""));
@@ -70,6 +79,13 @@ companies= new HashSet<>();
         conferenceString= conference+","+companyString+",";
         sp.edit().putString(user+" CData", conferenceString).apply();
         updateCompanies();
+
+        entrantNumLive.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                entrantNumView.setText("Number of Entrants: "+integer);
+            }
+        });
         addComp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,6 +226,12 @@ companies= new HashSet<>();
 
         return true;
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sp.edit().putInt(user+" eName",entrantNum).apply();
     }
 
     @Override
