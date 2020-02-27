@@ -67,7 +67,7 @@ public class UserData extends AppCompatActivity {
         saveB.setOnClickListener(view -> {
             Log.d("testing","user "+user);
             SharedPreferences sp= getSharedPreferences(user,MODE_PRIVATE);
-            sp.edit().putString("userData",""+DELIMETER+name.getText()+" "+DELIMETER+email.getText()+" "+DELIMETER+number.getText()+" "+DELIMETER+company.getText()
+            sp.edit().putString("userData",DELIMETER+name.getText()+" "+DELIMETER+email.getText()+" "+DELIMETER+number.getText()+" "+DELIMETER+company.getText()
                     +" "+DELIMETER+currentRole.getText()+" "+DELIMETER+educationLevel.getSelectedItem().toString()+DELIMETER+LinkedUrl.getText()+" ").apply();
             Toast.makeText(UserData.this,"Saved",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(UserData.this,EntrantMain.class));

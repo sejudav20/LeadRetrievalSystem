@@ -266,7 +266,7 @@ public class EntrantMain extends AppCompatActivity {
             @Override
             public void OnConnectionGood(String s) {
                 Toast.makeText(EntrantMain.this,"Transferring data",Toast.LENGTH_SHORT).show();
-                nc.sendMessage(s,sp.getString(user+" cName",null)+"&/;-;/&"+getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
+                nc.sendMessage(s,sp.getString(user+" cName",null)+getSharedPreferences(EntrantMain.getUser(),MODE_PRIVATE).getString("userData",""));
             }
 
             @Override

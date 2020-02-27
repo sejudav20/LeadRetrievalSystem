@@ -135,6 +135,7 @@ public class NearbyCreator {
       @Override
       public void OnStringReceived(String user, String s) {
         optionsOfAdvertising.OnStringReceived(user,s);
+
       }
 
       @Override

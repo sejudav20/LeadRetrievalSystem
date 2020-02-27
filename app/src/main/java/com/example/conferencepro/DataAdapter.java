@@ -1,14 +1,18 @@
 package com.example.conferencepro;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -20,15 +24,21 @@ public class DataAdapter extends
         RecyclerView.Adapter<DataAdapter.Holder> {
     List<EntrantData>allData;
     ApplicantRepository ar;
-    Context c;
+    Activity c;
 
-    public DataAdapter(Context context, List<EntrantData> allData,ApplicantRepository ar){
-        this.allData=allData;
+    public DataAdapter(Activity context, List<EntrantData> allData, ApplicantRepository ar){
+        if(allData!=null) {
+            this.allData = allData;
+        }else{ this.allData = new ArrayList<>();}
         c=context;
         this.ar=ar;
     }
     public void updateAllData(List<EntrantData> ed){
-        allData=ed;
+        if(ed!=null) {
+            allData = ed;
+        }else{
+            allData=new ArrayList<>();
+        }
         notifyDataSetChanged();
 
     }
@@ -44,36 +54,40 @@ public class DataAdapter extends
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
             EntrantData ed=allData.get(position);
-            holder.timesVisited.setText(ed.getTimesVisited()+"");
-            holder.timeStayed.setText(ed.getTimeStayed()+"");
+            holder.timesVisited.setText("Times Visited: "+ed.getTimesVisited()+"");
+            holder.timeStayed.setText("Time Stayed(Seconds): "+ed.getTimeStayed()+"");
             holder.name.setText(ed.getName());
             holder.ly.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Dialog dg= new Dialog(c);
-                    dg.setContentView(R.layout.view_data_box);
-                    dg.setTitle(ed.getName()+" name");
+                        AlertDialog.Builder dg= new AlertDialog.Builder(c);
+                    LayoutInflater inflater = c.getLayoutInflater();
+                    View dialogView=inflater.inflate(R.layout.view_data_box, null);
+
+                    dg.setTitle(ed.getName()+"'s info");
                     try {
-                       ApplicantInfo ai= ar.getSpecificApplicantInfo(ed.getUserData()).get(0);
-                       TextView email= dg.findViewById(R.id.emailView);
+                       ApplicantInfo ai= ar.getSpecificApplicantInfo(ed.getName()).get(0);
+                       TextView email= dialogView.findViewById(R.id.emailView);
 
                        email.setText("Email: "+ai.getEmail());
-                        TextView number= dg.findViewById(R.id.numberView);
+                        TextView number= dialogView.findViewById(R.id.numberView);
 
                         number.setText("Number: "+ai.getNumber());
-                        TextView education= dg.findViewById(R.id.educationView);
+                        TextView education= dialogView.findViewById(R.id.educationView);
 
                         education.setText("Education: "+ai.getEducationLevel());
-                        TextView linked= dg.findViewById(R.id.linkedIView);
+                        TextView linked= dialogView.findViewById(R.id.linkedIView);
 
                         linked.setText("LinkedIn Profile: "+ai.getLinkedIn());
-                        TextView currentRole= dg.findViewById(R.id.currentRoleView);
+                        TextView currentRole= dialogView.findViewById(R.id.currentRoleView);
 
                         currentRole.setText("Current Role: "+ai.getCurrentRole());
-                        TextView company= dg.findViewById(R.id.companyView);
+                        TextView company= dialogView.findViewById(R.id.companyView);
 
-                        currentRole.setText("Company: "+ai.getCompany());
-
+                        company.setText("Company: "+ai.getCompany());
+                        dg.setView(dialogView);
+                        AlertDialog de=dg.create();
+                        de.show();
 
                     } catch (ExecutionException e) {
                         e.printStackTrace();
@@ -97,13 +111,13 @@ public class DataAdapter extends
         TextView name;
         TextView timesVisited;
         TextView timeStayed;
-        LinearLayout ly;
+        Button ly;
         public Holder(@NonNull View itemView) {
             super(itemView);
             name=itemView.findViewById(R.id.Name);
             timeStayed=itemView.findViewById(R.id.TimeStayed);
             timesVisited=itemView.findViewById(R.id.TimesVisited);
-            ly=itemView.findViewById(R.id.linearL);
+            ly=itemView.findViewById(R.id.viewMoreInfo);
         }
     }
 }

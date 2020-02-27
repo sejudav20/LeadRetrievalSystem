@@ -10,7 +10,7 @@ import androidx.lifecycle.LiveData;
 
 public class ApplicantRepository {
     public AccessDao dao;
-    private LiveData<List<EntrantData>>allData;
+    private LiveData<List<EntrantData>> allData;
 
     ApplicantRepository(Application application) {
         ApplicantDatabase db = ApplicantDatabase.getDatabase(application);
@@ -23,21 +23,22 @@ public class ApplicantRepository {
             e.printStackTrace();
         }
     }
-    public void delete(EntrantData ed){
 
-            new deleteTask(dao).execute(ed);
+    public void delete(EntrantData ed) {
 
-    }
-    public void update(EntrantData entrantData){
-       new updateDataAsyncTask(dao).execute(entrantData);
-    }
-    public void insert(EntrantData ed,ApplicantInfo ai){
-
-        new insertTask(dao).execute(ed,ai);
+        new deleteTask(dao).execute(ed);
 
     }
 
-    public void delete(String name){
+    public void update(EntrantData entrantData) {
+        new updateDataAsyncTask(dao).execute(entrantData);
+    }
+
+    public void insert(ApplicantInfo ai,EntrantData ed) {
+        new insertTask(dao,ed).execute(ai);
+
+    }
+    public void delete(String name) {
         try {
             new deleteTask(dao).execute(getSpecificEntrantData(name).getValue().get(0));
         } catch (ExecutionException e) {
@@ -46,20 +47,24 @@ public class ApplicantRepository {
             e.printStackTrace();
         }
     }
-    public LiveData<List<EntrantData>> getAllData(){
+
+    public LiveData<List<EntrantData>> getAllData() {
         return allData;
     }
-    public LiveData<List<AllDataClass>> getAllDataWithInfo() throws ExecutionException, InterruptedException {
+
+    public List<AllDataClass> getAllDataWithInfo() throws ExecutionException, InterruptedException {
         return new getAllEntrantDataAsyncTaskWithInfo(dao).execute().get();
     }
+
     public LiveData<List<EntrantData>> getSpecificEntrantData(String string) throws ExecutionException, InterruptedException {
         return new getSpecificEntrantDataAsyncTask(dao).execute(string).get();
     }
 
     public List<ApplicantInfo> getSpecificApplicantInfo(EntrantData ed) throws ExecutionException, InterruptedException {
-        return new getSpecificApplicantDataAsyncTask(dao).execute(ed.getUserData()).get();
+        return new getSpecificApplicantDataAsyncTask(dao).execute(ed.getName()).get();
     }
-    public List<ApplicantInfo> getSpecificApplicantInfo(int i) throws ExecutionException, InterruptedException {
+
+    public List<ApplicantInfo> getSpecificApplicantInfo(String i) throws ExecutionException, InterruptedException {
         return new getSpecificApplicantDataAsyncTask(dao).execute(i).get();
     }
 
@@ -90,26 +95,51 @@ public class ApplicantRepository {
         @Override
         protected LiveData<List<AllDataClass>> doInBackground(String... strings) {
 
-            return mAsyncTaskDao.getAllApplicantData("%"+strings[0]+"%");
+            return mAsyncTaskDao.getAllApplicantData("%" + strings[0] + "%");
         }
     }
 
 
-    private static class insertTask extends AsyncTask<Object, Void, Void> {
+    private static class insertTask extends AsyncTask<ApplicantInfo, Void, Void> {
+
+        private AccessDao mAsyncTaskDao;
+        private EntrantData ed;
+        insertTask(AccessDao dao,EntrantData ed) {
+            mAsyncTaskDao = dao;
+            this.ed=ed;
+        }
+
+        @Override
+        protected Void doInBackground(ApplicantInfo... objects) {
+
+                mAsyncTaskDao.insert((ApplicantInfo) objects[0]);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            new insertTask2(mAsyncTaskDao).execute(ed);
+        }
+    }
+    private static class insertTask2 extends AsyncTask<EntrantData, Void, Void> {
 
         private AccessDao mAsyncTaskDao;
 
-        insertTask(AccessDao dao) {
+        insertTask2(AccessDao dao) {
             mAsyncTaskDao = dao;
         }
 
         @Override
-        protected Void doInBackground(Object... objects) {
-            if(objects[0] instanceof EntrantData && objects[1] instanceof ApplicantInfo){
-           mAsyncTaskDao.insert((EntrantData)objects[0],(ApplicantInfo) objects[1]);}
+        protected Void doInBackground(EntrantData... objects) {
+
+
+                mAsyncTaskDao.insert((EntrantData) objects[0]);
             return null;
         }
+
     }
+
     private static class deleteTask extends AsyncTask<EntrantData, Void, Void> {
 
         private AccessDao mAsyncTaskDao;
@@ -124,7 +154,8 @@ public class ApplicantRepository {
             return null;
         }
     }
-    private static class getSpecificApplicantDataAsyncTask extends AsyncTask<Integer, Void,List<ApplicantInfo>> {
+
+    private static class getSpecificApplicantDataAsyncTask extends AsyncTask<String, Void, List<ApplicantInfo>> {
 
         private AccessDao mAsyncTaskDao;
 
@@ -133,7 +164,7 @@ public class ApplicantRepository {
         }
 
         @Override
-        protected List<ApplicantInfo>doInBackground(Integer... keys) {
+        protected List<ApplicantInfo> doInBackground(String... keys) {
 
             return mAsyncTaskDao.getApplicantData(keys);
         }
@@ -150,9 +181,10 @@ public class ApplicantRepository {
         @Override
         protected LiveData<List<EntrantData>> doInBackground(String... keys) {
 
-            return mAsyncTaskDao.getSpecificEntrantData("%"+keys[0]+"%");
+            return mAsyncTaskDao.getSpecificEntrantData("%" + keys[0] + "%");
         }
     }
+
     private static class updateDataAsyncTask extends AsyncTask<EntrantData, Void, Void> {
 
         private AccessDao mAsyncTaskDao;
@@ -168,7 +200,7 @@ public class ApplicantRepository {
         }
     }
 
-    private static class getAllEntrantDataAsyncTaskWithInfo extends AsyncTask<Void, Void, LiveData<List<AllDataClass>>> {
+    private static class getAllEntrantDataAsyncTaskWithInfo extends AsyncTask<Void, Void, List<AllDataClass>> {
 
         private AccessDao mAsyncTaskDao;
 
@@ -177,12 +209,11 @@ public class ApplicantRepository {
         }
 
         @Override
-        protected LiveData<List<AllDataClass>> doInBackground(Void... keys) {
+        protected List<AllDataClass> doInBackground(Void... keys) {
 
             return mAsyncTaskDao.getAllDataWithApplicantInfo();
         }
     }
-
 
 
 }

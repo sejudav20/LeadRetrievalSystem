@@ -9,7 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.lifecycle.LiveData;
@@ -21,6 +21,7 @@ import android.os.ParcelFileDescriptor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class JobViewData extends AppCompatActivity {
     RecyclerView rv;
     DataAdapter allDataAdapter;
     ApplicantRepository ar;
-    SearchView sv;
+
     LiveData<List<EntrantData>> liveData;
     private static final int REQUEST_CODE = 1;
 
@@ -79,7 +80,6 @@ public class JobViewData extends AppCompatActivity {
         rv = findViewById(R.id.recyclerData);
         rv.setLayoutManager(new LinearLayoutManager(this));
         ar = new ApplicantRepository(this.getApplication());
-        sv = findViewById(R.id.searchView);
 
         liveData = ar.getAllData();
         liveData.observe(this, new Observer<List<EntrantData>>() {
@@ -93,14 +93,20 @@ public class JobViewData extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Downloading CSV file", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                    if(ar.getAllData().getValue()!=null){
+                    Snackbar.make(view, "Downloading CSV file", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("application/csv");
                 intent.putExtra(Intent.EXTRA_TITLE, "Conference_"+JobMain.jobName+"_data.csv");
-                startActivityForResult(intent, REQUEST_CODE);
+                startActivityForResult(intent, REQUEST_CODE);}else{
+                        Snackbar.make(view, "No Data Exists", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
 
+                    }
             }
         });
     }
@@ -123,11 +129,11 @@ public class JobViewData extends AppCompatActivity {
                     fileOutputStream.write(("Name,Times Visited,Total Time Stayed,Email,Phone,Current Company,Current Role" +
                             ",Education,LinkedIn").getBytes());
 
-                    List<AllDataClass> allData=ar.getAllDataWithInfo().getValue();
+                    List<EntrantData> allData=ar.getAllData().getValue();
 
-                    for(AllDataClass gd:allData){
-                        EntrantData ed=gd.getEd();
-                        ApplicantInfo ai=gd.getAi();
+                    for(EntrantData gd:allData){
+                        EntrantData ed=gd;
+                        ApplicantInfo ai=ar.getSpecificApplicantInfo(ed.getName()).get(0);
                         fileOutputStream.write(("\n"+ed.getName()+","+ed.getTimesVisited()+","+ed.getTimeStayed()+","+ai.getEmail()+","
                         +ai.getNumber()+","+ai.getCompany()+","+ai.getCurrentRole()+","+ai.getEducationLevel()+","+ai.getLinkedIn()).getBytes());
                     }

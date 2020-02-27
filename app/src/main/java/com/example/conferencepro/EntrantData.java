@@ -6,9 +6,9 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Entrant Data",foreignKeys = @ForeignKey(entity = ApplicantInfo.class,parentColumns = "userId",childColumns = "userData",onDelete = ForeignKey.CASCADE),indices = {@Index("userData")})
+@Entity(tableName = "Entrant Data", foreignKeys = @ForeignKey(entity = ApplicantInfo.class, parentColumns = "userName", childColumns = "name", onDelete = ForeignKey.CASCADE), indices = {@Index("name")})
 public class EntrantData {
-   @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo()
     private String name;
@@ -21,9 +21,9 @@ public class EntrantData {
         this.id = id;
     }
 
-    public EntrantData(String name, int userData, int timesVisited, long timeStayed) {
+    public EntrantData(String name, int timesVisited, long timeStayed) {
         this.name = name;
-        this.userData = userData;
+
         this.timesVisited = timesVisited;
         this.timeStayed = timeStayed;
     }
@@ -36,13 +36,6 @@ public class EntrantData {
         this.name = name;
     }
 
-    public int getUserData() {
-        return userData;
-    }
-
-    public void setUserData(int userData) {
-        this.userData = userData;
-    }
 
     public int getTimesVisited() {
         return timesVisited;
@@ -60,11 +53,9 @@ public class EntrantData {
         this.timeStayed = timeStayed;
     }
 
-    @ColumnInfo()
-    private int userData;
 
     @ColumnInfo()
     private int timesVisited;
-   @ColumnInfo()
+    @ColumnInfo()
     private long timeStayed;
 }

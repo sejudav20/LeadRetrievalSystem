@@ -1,15 +1,18 @@
 package com.example.conferencepro;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("userId")})
+@Entity(indices = {@Index("userName")})
 public class ApplicantInfo {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     @ColumnInfo
-    private int userId;
+    @NonNull
+    private String userName;
     @ColumnInfo()
     private String email;
     @ColumnInfo()
@@ -21,7 +24,8 @@ public class ApplicantInfo {
     @ColumnInfo()
     private String company;
 
-    public ApplicantInfo(String email, String number, String educationLevel, String currentRole, String company, String linkedIn) {
+    public ApplicantInfo(String userName,String email, String number, String educationLevel, String currentRole, String company, String linkedIn) {
+        this.userName=userName;
         this.email = email;
         this.number = number;
         this.educationLevel = educationLevel;
@@ -33,12 +37,12 @@ public class ApplicantInfo {
     @ColumnInfo()
     private String linkedIn;
 
-    public int getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(int id) {
-        this.userId= id;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {

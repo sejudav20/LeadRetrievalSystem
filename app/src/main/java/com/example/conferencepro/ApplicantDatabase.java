@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {EntrantData.class,ApplicantInfo.class}, version = 1,exportSchema = false)
+@Database(entities = {EntrantData.class,ApplicantInfo.class}, version = 2,exportSchema = false)
 public abstract class ApplicantDatabase extends RoomDatabase {
     public abstract AccessDao dao();
 
@@ -18,7 +18,7 @@ public abstract class ApplicantDatabase extends RoomDatabase {
             synchronized (ApplicantDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ApplicantDatabase.class, "Entrant_database")
+                            ApplicantDatabase.class, "Entrant_database").fallbackToDestructiveMigration()
                             .build();
                 }
             }

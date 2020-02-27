@@ -14,14 +14,17 @@ import androidx.room.Update;
 public interface AccessDao {
     @Query("Select * from `Entrant Data`")
     LiveData<List<EntrantData>> getAllData();
-    @Query("Select * from `Entrant Data` Inner Join ApplicantInfo ON ApplicantInfo.userId=`Entrant Data`.userData")
-    LiveData<List<AllDataClass>> getAllDataWithApplicantInfo();
-    @Query("Select * from `ApplicantInfo` where userId=:userKey")
-    List<ApplicantInfo> getApplicantData(Integer[] userKey);
+    @Query("Select `Entrant Data`.*, ApplicantInfo.* from `Entrant Data` Inner Join ApplicantInfo ON `Entrant Data`.name=ApplicantInfo.userName")
+    List<AllDataClass> getAllDataWithApplicantInfo();
+    @Query("Select * from `ApplicantInfo` where userName=:userKey")
+    List<ApplicantInfo> getApplicantData(String[] userKey);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(EntrantData ed,ApplicantInfo af);
+    void insert(ApplicantInfo af);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(EntrantData ed);
 
-    @Query("Select * from `Entrant Data` Inner Join ApplicantInfo ON id=`Entrant Data`.userData where name LIke :name")
+
+    @Query("Select * from `Entrant Data` Inner Join ApplicantInfo ON id=`Entrant Data`.name where name LIke :name")
     LiveData<List<AllDataClass>> getAllApplicantData(String name);
     @Query("Select * from `Entrant Data`  where name LIke :name")
     LiveData<List<EntrantData>> getSpecificEntrantData(String name);
