@@ -429,14 +429,14 @@ public void updateCompanies(){
     companyString="";
     conference=sp.getString(user+" cName","");
     if(conference==""){
-        Log.d("testing","conferenceName is not working");
+
     }
     for(String s:companies){
         companyString+=s+",";
     }
     companyView.setText("Companies Added: "+companyString);
     conferenceString= conference+","+companyString+",";
-    Log.d("testing","Conference String "+conferenceString);
+
 }
 
 

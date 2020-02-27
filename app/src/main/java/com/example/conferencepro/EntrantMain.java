@@ -82,7 +82,7 @@ public class EntrantMain extends AppCompatActivity {
             txe.setText("Current Conference is:"+sp.getString(user+" cName",""));
             nc= new NearbyCreator(EntrantMain.this,"ConferencePro "+sp.getString(user+" cName",""), Strategy.P2P_CLUSTER);
             updateCompanies(sp.getString(user+" CData",null));
-            Log.d("testing","companies"+companies.toString());
+
 
         }
         confNumber= findViewById(R.id.confNumber);
@@ -105,9 +105,10 @@ public class EntrantMain extends AppCompatActivity {
                 }
 
                 @Override
-                public void OnStringReceived(String s,String user) {
+                public void OnStringReceived(String user,String s) {
 
                     Scanner sc=new Scanner(s);
+
                 sc.useDelimiter(",");
                    confname=sc.next();
                    conference=confname;

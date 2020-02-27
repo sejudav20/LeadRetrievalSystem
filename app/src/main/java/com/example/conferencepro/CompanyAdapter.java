@@ -28,20 +28,20 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LinearLayout lI=(LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.companyadapter,parent,false);
-        TextView tv= lI.findViewById(R.id.tvCompany);
-        CheckBox cv= lI.findViewById(R.id.companyCheckbox);
-        MyViewHolder v= new MyViewHolder(tv,cv);
+
+        MyViewHolder v= new MyViewHolder(lI);
 
         return v;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+
           holder.tv.setText(keys.get(position));
 
 
-          holder.b.setChecked(sendable.contains(keys.get(position)));
-          holder.b.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+          holder.cv.setChecked(sendable.contains(keys.get(position)));
+          holder.cv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
               @Override
               public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                   if(b){
@@ -49,16 +49,16 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
                   }else{
                       sendable.remove(keys.get(position));
                   }
-                  spi.edit().putBoolean(keys.get(position),b).apply();
+
               }
           });
     }
-    public CompanyAdapter(Set<String> data, Activity context, String user){
+    public CompanyAdapter(HashSet<String> data, Activity context, String user){
 
         this.data=data;
         keys= new ArrayList<>(data);
         spi=context.getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
-        sendable=spi.getStringSet("sent",data);
+        sendable=spi.getStringSet("sent",(HashSet<String>)data.clone());
     }
 
     @Override
@@ -67,12 +67,13 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     }
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView tv;
-        CheckBox b;
+        CheckBox cv;
 
-        public MyViewHolder(@NonNull TextView itemView,CheckBox cb) {
-            super(itemView);
-            b=cb;
-            tv=itemView;
+        public MyViewHolder(@NonNull LinearLayout ll) {
+            super(ll);
+
+            tv= ll.findViewById(R.id.tvCompany);
+             cv= ll.findViewById(R.id.companyCheckbox);
         }
     }
 

@@ -4,7 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.widget.Toast;
+
 
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
@@ -165,14 +165,14 @@ public class NearbyCreator {
     final ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
       @Override
       public void onConnectionInitiated(@NonNull String s, @NonNull ConnectionInfo connectionInfo) {
-        Toast.makeText(context,"Accepting connection",Toast.LENGTH_SHORT).show();
+
 
         Nearby.getConnectionsClient(context).acceptConnection(s, payloadCallback);
       }
 
       @Override
       public void onConnectionResult(@NonNull String s, @NonNull ConnectionResolution result) {
-        Toast.makeText(context,"Authenticating",Toast.LENGTH_SHORT).show();
+
 
         switch (result.getStatus().getStatusCode()) {
           case ConnectionsStatusCodes.STATUS_OK:
@@ -458,7 +458,7 @@ public class NearbyCreator {
 
   // this is called when a string is sent
   private interface StringReceived {
-    void OnStringReceived(String s1, String s);
+    void OnStringReceived(String user, String s);
 
     //When string is succesfully transfered
     void OnUpdate();
