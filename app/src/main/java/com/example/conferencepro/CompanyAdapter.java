@@ -28,18 +28,11 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LinearLayout lI=(LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.companyadapter,parent,false);
-
         MyViewHolder v= new MyViewHolder(lI);
-
-        return v;
-    }
-
+        return v; }
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-
           holder.tv.setText(keys.get(position));
-
-
           holder.cv.setChecked(sendable.contains(keys.get(position)));
           holder.cv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
               @Override
@@ -48,13 +41,8 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
                       sendable.add(keys.get(position));
                   }else{
                       sendable.remove(keys.get(position));
-                  }
-
-              }
-          });
-    }
+                  } }}); }
     public CompanyAdapter(HashSet<String> data, Activity context, String user){
-
         this.data=data;
         keys= new ArrayList<>(data);
         spi=context.getSharedPreferences(user+" conferenceJobs",MODE_PRIVATE);
