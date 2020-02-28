@@ -117,20 +117,15 @@ public class JobViewData extends AppCompatActivity {
         if(requestCode==REQUEST_CODE){
             Uri uri = null;
             if (data != null) {
-
                 uri = data.getData();
-
                 try {
                     ParcelFileDescriptor pfd = this.getContentResolver().
                             openFileDescriptor(uri, "w");
                     FileOutputStream fileOutputStream =
                             new FileOutputStream(pfd.getFileDescriptor());
-
                     fileOutputStream.write(("Name,Times Visited,Total Time Stayed,Email,Phone,Current Company,Current Role" +
                             ",Education,LinkedIn").getBytes());
-
                     List<EntrantData> allData=ar.getAllData().getValue();
-
                     for(EntrantData gd:allData){
                         EntrantData ed=gd;
                         ApplicantInfo ai=ar.getSpecificApplicantInfo(ed.getName()).get(0);
