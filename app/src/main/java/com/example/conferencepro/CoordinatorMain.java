@@ -97,6 +97,7 @@ companies= new HashSet<>();
                 String company=addCompName.getText().toString();
                 if(!(company.equals("")||companies.contains(company))){
                     companies.add(company);
+                    addCompName.setText("");
 
                     updateCompanies();
                 }else{
@@ -131,6 +132,7 @@ companies= new HashSet<>();
                         editConferenceName.setVisibility(View.INVISIBLE);
                         ll.setVisibility(View.VISIBLE);
                         advertiseConference.setVisibility(View.VISIBLE);
+                        conferenceNumber=sp.getInt(user+" cNum",0);
                     }
                 }
             });
@@ -155,6 +157,8 @@ companies= new HashSet<>();
                     String s= conference;
                     nc.startAdvertising(conferenceNumber+"",optionsToAdvertiseToUser);
                     advertiseConference.setText("Stop Advertising...");
+                }else{
+                    Toast.makeText(CoordinatorMain.this,"Please create conference first",Toast.LENGTH_SHORT).show();
                 }}else{
                    nc.stopAdvertising();
                    advertiseConference.setText("Advertise Conference");
@@ -191,7 +195,8 @@ companies= new HashSet<>();
             Toast.makeText(CoordinatorMain.this,"Sent Conference data",Toast.LENGTH_SHORT).show();
             Log.d("testing","Conference Name "+conference);
             nc.sendMessage(s,conference+","+companyString);
-            entrantNum-=-1;
+            entrantNum++;
+            entrantNumView.setText("Entrant Number: "+entrantNum);
         }
 
         @Override
